@@ -300,7 +300,7 @@ int main() {
 
  			free_energy();
 			
-			if(fabs(dE) < accuracy || cycle == stopat){
+			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
 				printf("Error in the trace of q; cycle : %d.\n", cycle);
 				flag = false;
 				break;
