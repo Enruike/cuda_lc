@@ -215,14 +215,6 @@ int main() {
 			return 0;
 		}
 
-
-		//Copy from host to device
-		cudaStatus = cudaMemcpy(d_Qold, Qold, droplet * 6 * sizeof(double), cudaMemcpyHostToDevice);
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
-			return 0;
-		}
-
 		//We need h_bulktype to calculate energy in CPU. Don't free it.
 		cudaStatus = cudaMemcpy(d_bulktype, h_bulktype, droplet * sizeof(unsigned char), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
@@ -316,6 +308,14 @@ int main() {
 
 					}
 				}
+
+				//Copy from host to device
+				cudaStatus = cudaMemcpy(d_Qold, Qold, droplet * 6 * sizeof(double), cudaMemcpyHostToDevice);
+				if (cudaStatus != cudaSuccess) {
+					fprintf(stderr, "cudaMemcpy failed!");
+					return 0;
+				}
+				
 				//if(!flag){
 				//	printf("Error in the trace of q; cycle : %d.\n", cycle);
 				//}
