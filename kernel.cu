@@ -306,17 +306,19 @@ int main() {
 				break;
 			}
 
-			if((cycle % 50000) == 0){
+			if((cycle % check_every) == 0){
 				for(int i = 0; i < droplet; i++){
 					//				checktr(&q[i * 6]);
 					if(!checktr(&Qold[i * 6])){
-						flag = false;
+						//flag = false;
+						printf("Trace corrected!\n");
 						printf("%d\n", i);
+
 					}
 				}
-				if(!flag){
-					printf("Error in the trace of q; cycle : %d.\n", cycle);
-				}
+				//if(!flag){
+				//	printf("Error in the trace of q; cycle : %d.\n", cycle);
+				//}
 			}
 
 			if((cycle % save_every) == 0){
