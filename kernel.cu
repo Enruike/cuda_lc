@@ -16,7 +16,7 @@ double en_ldg;
 double en_surf[2];
 double en_el[5];
 
-__device__ double d_trqq(double* Qin){
+__device__ double d_trqq(double Qin[6]){
 	double ans = 0.;
 	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
 		+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
@@ -45,7 +45,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 			//printf("Non-tracelss.\n");			
 		}
 
-		if(d_trqq(d_Qold[indx * 6]) > 1){
+		if(d_trqq(d_Qold[indx * 6]) > 1.){
 	//		for(n = 0; n < 6; n ++){
 	//			Q[n] /= 1.3;
 	//		}
