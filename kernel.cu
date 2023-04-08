@@ -16,10 +16,43 @@ double en_ldg;
 double en_surf[2];
 double en_el[5];
 
-// double en_ldg;
-// double en_surf[2];
-// double en_el[5];
+__device__ double d_trqq(double Qin[6]){
+	double ans = 0.
+	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
+		+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
+	return ans;
+}
 
+__global__ void d_checktrace(double* d_Qold, unsigned int droplet){
+
+	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
+
+	if(indx < droplet){
+
+		double tr = 0;
+		double third =  1.0 / 3.0;
+	
+		tr = (d_Qold[indx * 6 + 0] + d_Qold[indx * 6 + 3] + d_Qold[indx * 6 + 5]) * third;
+
+		if(tr > 1e-5) {
+			printf("Correcting trace for node %d!\n", indx);
+			printf("%f %f %f %f %f %f\n", d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
+				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
+
+			d_Qold[indx * 6 + 0] -= tr;
+			d_Qold[indx * 6 + 3] -= tr;
+			d_Qold[indx * 6 + 5] -= tr;
+			//printf("Non-tracelss.\n");			
+		}
+
+		if(d_trqq(d_Qold[indx * 6]) > 1){
+	//		for(n = 0; n < 6; n ++){
+	//			Q[n] /= 1.3;
+	//		}
+			printf("Order parameter exceed 1.\n");
+		}
+	}
+}
 
 int main() {
 
@@ -201,7 +234,6 @@ int main() {
 			return 0;
 		}
 		//****************************************************************************//
-	
 
 		//Neighboor must have sign for -1 value.
 		cudaStatus = cudaMalloc((void**)&d_neighbor, sizeof(int) * droplet * 6);
@@ -228,6 +260,12 @@ int main() {
 			return 0;
 		}
 
+		//Copy from host to device
+		cudaStatus = cudaMemcpy(d_Qold, Qold, droplet * 6 * sizeof(double), cudaMemcpyHostToDevice);
+		if (cudaStatus != cudaSuccess) {
+			fprintf(stderr, "cudaMemcpy failed!");
+			return 0;
+		}
 
 		////****************************///
 		//New vectors signal
@@ -278,9 +316,13 @@ int main() {
 		//size for bulk
 		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
 
+		unsigned int dropletBlocks = rint(droplet / threads_per_block) + 1;
+
 		printf("The number of Bulk Blocks is %d\n", bulkBlocks);
 
 		printf("The number of Surf Blocks is %d\n", surfBlocks);
+
+		printf("The number of Droplet Blocks is %d\n", dropletBlocks);
 
 		//__device__ double devThird;
 		//double third = 1. / 3.;
@@ -298,28 +340,25 @@ int main() {
 				break;
 			}
 
-			if((cycle % check_every) == 0){
-				for(int i = 0; i < droplet; i++){
-					//				checktr(&q[i * 6]);
-					if(!checktr(&Qold[i * 6])){
-						//flag = false;
-						printf("Trace corrected!\n");
-						printf("%d\n", i);
+			d_checktrace<<<dropletBlocks, threads_per_blocks>>>(d_Qold, droplet);
+			cudaDeviceSynchronize();
 
-					}
-				}
+			//if((cycle % check_every) == 0){
 
-				//Copy from host to device
-				cudaStatus = cudaMemcpy(d_Qold, Qold, droplet * 6 * sizeof(double), cudaMemcpyHostToDevice);
-				if (cudaStatus != cudaSuccess) {
-					fprintf(stderr, "cudaMemcpy failed!");
-					return 0;
-				}
 				
+				// for(int i = 0; i < droplet; i++){
+				// 	//				checktr(&q[i * 6]);
+				// 	if(!checktr(&Qold[i * 6])){
+				// 		//flag = false;
+				// 		printf("Trace corrected!\n");
+				// 		printf("%d\n", i);
+
+				// 	}
+				// }				
 				//if(!flag){
 				//	printf("Error in the trace of q; cycle : %d.\n", cycle);
 				//}
-			}
+			//}
 
 			if((cycle % save_every) == 0){
 				output();
