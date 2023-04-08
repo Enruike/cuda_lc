@@ -16,8 +16,8 @@ double en_ldg;
 double en_surf[2];
 double en_el[5];
 
-__device__ double d_trqq(double Qin[6]){
-	double ans = 0.
+__device__ double d_trqq(double* Qin){
+	double ans = 0.;
 	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
 		+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
 	return ans;
@@ -340,7 +340,7 @@ int main() {
 				break;
 			}
 
-			d_checktrace<<<dropletBlocks, threads_per_blocks>>>(d_Qold, droplet);
+			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 
 			//if((cycle % check_every) == 0){
