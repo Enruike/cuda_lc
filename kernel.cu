@@ -17,10 +17,10 @@ double en_surf[2];
 double en_el[5];
 
 __device__ double d_trqq(double Qin[6]){
-	double ans = 0.;
-	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
-		+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
-	return ans;
+        double ans = 0.;
+        ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
+                + 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
+        return ans;
 }
 
 __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
@@ -45,13 +45,18 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 			//printf("Non-tracelss.\n");			
 		}
 
-		if(d_trqq(d_Qold[indx * 6]) > 1.){
-	//		for(n = 0; n < 6; n ++){
-	//			Q[n] /= 1.3;
-	//		}
-			printf("Order parameter exceed 1.\n");
-		}
-	}
+			double Qin[6] = { 0. };
+			
+            for(int i = 0; i < 6; i++){
+                Qin[i] = d_Qold[indx * 6 + i];
+            }
+
+            if(d_trqq(Qin) > 1.){
+        //              for(n = 0; n < 6; n ++){
+        //                      Q[n] /= 1.3;
+        //              }
+                printf("Order parameter exceed 1.\n");
+            }
 }
 
 int main() {
