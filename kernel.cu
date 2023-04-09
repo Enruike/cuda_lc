@@ -327,7 +327,7 @@ int main() {
 
 		printf("The number of Surf Blocks is %d\n", surfBlocks);
 
-		printf("The number of Droplet Blocks is %d\n", dropletBlocks);
+		printf("The number of Droplet Blocks is %d\n\n", dropletBlocks);
 
 		//__device__ double devThird;
 		//double third = 1. / 3.;
@@ -405,7 +405,7 @@ int main() {
 				break;
 			}
 		}
-		
+
 		output();
 		
 		time(&end);
