@@ -46,7 +46,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 		}
 
 			double Qin[6] = { 0. };
-			
+
             for(int i = 0; i < 6; i++){
                 Qin[i] = d_Qold[indx * 6 + i];
             }
@@ -57,6 +57,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
         //              }
                 printf("Order parameter exceed 1.\n");
             }
+	}
 }
 
 int main() {
