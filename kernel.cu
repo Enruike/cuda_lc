@@ -35,8 +35,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 		tr = (d_Qold[indx * 6 + 0] + d_Qold[indx * 6 + 3] + d_Qold[indx * 6 + 5]) * third;
 
 		if(tr > 1e-5) {
-			printf("Correcting trace for node %d!\n", indx);
-			printf("%f %f %f %f %f %f\n", d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
+			printf("Correcting trace for node %d!\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
 				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
 
 			d_Qold[indx * 6 + 0] -= tr;
@@ -338,6 +337,7 @@ int main() {
 
 		while (flag) {
 
+			printf("<<<========== ~Checking Energy~ ==========>>>\n");
  			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
@@ -346,6 +346,7 @@ int main() {
 				break;
 			}
 
+			printf("<<========== ~Checking Trace~ ==========>>\n");
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 
@@ -370,6 +371,7 @@ int main() {
 				output();
 			}
 
+			printf("<<========== ~Relaxing~ ==========>>\n");
 			for (int i = 0; i < check_every; i++) {
 
 				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, bulk, idx, idy, idz,
