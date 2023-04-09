@@ -337,7 +337,7 @@ int main() {
 
 		while (flag) {
 
-			printf("<<<========== ~Checking Energy~ ==========>>>\n");
+			printf("        <<<========== ~Computing Energy~ ==========>>>\n");
  			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
@@ -346,7 +346,7 @@ int main() {
 				break;
 			}
 
-			printf("<<========== ~Checking Trace~ ==========>>\n");
+			printf("          <<========== ~Checking Trace~ ==========>>\n");
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 
@@ -368,10 +368,11 @@ int main() {
 			//}
 
 			if((cycle % save_every) == 0){
+				printf("             <<<<===== ~Saving Data~ =====>>>\n");
 				output();
 			}
 
-			printf("<<========== ~Relaxing~ ==========>>\n");
+			printf("            <<========== ~Relaxing~ ==========>>\n");
 			for (int i = 0; i < check_every; i++) {
 
 				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, bulk, idx, idy, idz,
@@ -393,15 +394,18 @@ int main() {
 				//
 
 			}
+			printf("                    <<<=== ~ Done ~ ===>>>\n");
 
 			// flag=false;
-
+			printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
 			cudaStatus = cudaMemcpy(Qold, d_Qold, droplet * 6 * sizeof(double), cudaMemcpyDeviceToHost);
 			if (cudaStatus != cudaSuccess) {
-				fprintf(stderr, "cudaMemcpy failed!");
+				fprintf(stderr, "cudaMemcpy failed!\n");
 				return 0;
+				break;
 			}
 		}
+		
 		output();
 		
 		time(&end);
