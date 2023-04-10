@@ -363,8 +363,8 @@ int main() {
 				break;
 			}
 
-			printf("\033[1;31m");
 			printf("\t\t ~Checking Trace~ \n");
+			printf("\033[1;31m");
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 			printf("\033[0m");
@@ -387,7 +387,9 @@ int main() {
 			//}
 
 			if((cycle % save_every) == 0){
+				printf("\x1b[32m");
 				printf("\t\t ~Saving Data~ \n");
+				printf("\033[0m\n");
 				output();
 			}
 
