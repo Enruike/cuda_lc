@@ -35,10 +35,9 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 		tr = (d_Qold[indx * 6 + 0] + d_Qold[indx * 6 + 3] + d_Qold[indx * 6 + 5]) * third;
 
 		if(tr > 1e-5) {
-			printf("\033[1;31m");
+			
 			printf("Correcting trace for node %d!\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
 				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
-			printf("\033[0m");
 
 			d_Qold[indx * 6 + 0] -= tr;
 			d_Qold[indx * 6 + 3] -= tr;
@@ -364,10 +363,12 @@ int main() {
 				break;
 			}
 
+			printf("\033[1;31m");
 			printf("\t\t ~Checking Trace~ \n");
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
-
+			printf("\033[0m");
+			
 			//if((cycle % check_every) == 0){
 
 				

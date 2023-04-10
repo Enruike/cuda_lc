@@ -90,7 +90,12 @@ bool read_param() {
 		//My new variables for dynamic savings.
 		printf("Checkpoint every %d!\n", save_every);
 		printf("Energy will be compared every %d!\n", check_every);
-		printf("Job will be STOPPED after %d!\n", stopat);
+		if(stopat != 0){
+			printf("Job will be\033[1;31m STOPPED\033[0m after %d!\n", stopat);
+		}
+		else{
+			printf("Job running until dE is reached!\n");
+		}
 
 		if (surfdegen) {
 			status = "Activated";
