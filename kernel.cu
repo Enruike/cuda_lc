@@ -340,6 +340,18 @@ int main() {
 		//Progress bar
 		const char *shade = "\u2592";
     	const char *shade2 = "\u2588";
+		
+		if(stopat != 0){
+
+			printf("Total Progress\n");
+			printf("[");
+
+			for(int i = 0; i < 50; i++){
+				printf(" ");
+			}
+			
+			printf("] 0.00%\n");
+		}
 
 		while (flag) {
 
