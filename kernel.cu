@@ -39,7 +39,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 			printf("Correcting trace for node %d!\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
 				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
 			printf("\033[0m");
-			
+
 			d_Qold[indx * 6 + 0] -= tr;
 			d_Qold[indx * 6 + 3] -= tr;
 			d_Qold[indx * 6 + 5] -= tr;
@@ -426,7 +426,7 @@ int main() {
 				for(int i = 0; i < rint(percentage / 2); i++){
 					printf("#");
 				}
-				for(int i = 0; i < rint(100 / 2) rint(percentage - 1); i++){
+				for(int i = 0; i < rint(100 / 2) - rint(percentage - 1); i++){
 					printf(" ");
 				}
 				
