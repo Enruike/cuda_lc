@@ -388,7 +388,7 @@ int main() {
 			printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
-				if((cycle%(check_every/100)==0)){
+				if((cycle%(check_every/50)==0)){
 					printf(shade2);
 				}
 
