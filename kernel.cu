@@ -377,22 +377,22 @@ int main() {
 				output();
 			}
 
-			printf("\t\t\t ~Relaxing~ \n");
+			printf("\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
-			printf("\t");
+			//printf("\t");
 			for(int i = 0; i < 50; i++){
 				//std::cout << "\x2592";
 				printf(shade);
 			}
+
 			printf("\r");
-			printf("\t");
+			//printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
 				if((cycle%(check_every/50)==0)){
 					printf(shade2);
 				}
-
 
 				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, bulk, idx, idy, idz,
 					iddx, iddy, iddz, dt);
@@ -414,9 +414,9 @@ int main() {
 
 			}
 			
-			printf("\033[0m");
+			printf("\033[0m\n");
 			//printf("\n\t\t\t ~Done~ \n\n");
-			
+
 			// flag=false;
 			//printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
 			cudaStatus = cudaMemcpy(Qold, d_Qold, droplet * 6 * sizeof(double), cudaMemcpyDeviceToHost);

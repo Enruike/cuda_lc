@@ -24,10 +24,23 @@ void free_energy() {
 	old_en = en_tot;
 
 	if (cycle % check_every == 0) {
-		printf("En_LDG: %lf, En_L1: %lf, En_L2: %lf, En_L3: %lf, En_L4: %lf, En_Chiral: %lf, En_Surf1: %lf, En_Surf2: %lf Cycle = %d\n", \
-			l_en_ldg, en_el[0], en_el[1], en_el[2], en_el[3], en_el[4], en_surf[0], en_surf[1], cycle);
-		printf("la energia total es: %lf \n", en_tot);
-		printf("dE vale %lf \n", dE);
+		printf("En_LDG: %lf, En_L1: %lf, ", l_en_ldg, en_el[0], en_surf[0], en_surf[1], cycle);
+		if(en_el[1] != 0){
+			printf("En_L2: %lf, ", en_el[1]);
+		}
+		if(en_el[2] != 0){
+			printf("En_L3: %lf, ", en_el[2]);
+		}
+		if(en_el[3] != 0){
+			printf("En_L4: %lf, ", en_el[3]);
+		}
+		printf("En_Chiral: %lf, En_Surf1: %lf, ", en_el[4], en_surf[0]);
+		if(en_surf[2] != 0){
+			printf("En_Surf2: %lf ", en_surf[1]);
+		}
+		printf("Cycle: %d\n", cycle);
+		printf("Total energy is: %lf \n", en_tot);
+		printf("dE: %lf \n", dE);
 	}
 
 }
