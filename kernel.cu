@@ -342,7 +342,7 @@ int main() {
 
 		while (flag) {
 
-			printf("        <<<========== ~Computing Energy~ ==========>>>\n");
+			printf("\t\t\t\t ~Computing Energy~ \n");
  			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
@@ -351,7 +351,7 @@ int main() {
 				break;
 			}
 
-			printf("          <<========== ~Checking Trace~ ==========>>\n");
+			printf("\t\t ~Checking Trace~ \n");
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 
@@ -373,11 +373,11 @@ int main() {
 			//}
 
 			if((cycle % save_every) == 0){
-				printf("             <<<<===== ~Saving Data~ =====>>>\n");
+				printf("\t\t ~Saving Data~ \n");
 				output();
 			}
 
-			printf("\t ~Relaxing~ \n");
+			printf("\n\t\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			//printf("\t");
@@ -413,7 +413,7 @@ int main() {
 				//
 
 			}
-			
+			printf("\n");
 			printf("\033[0m\n");
 			//printf("\n\t\t\t ~Done~ \n\n");
 
