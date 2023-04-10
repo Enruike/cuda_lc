@@ -422,10 +422,10 @@ int main() {
 
 				printf("Total Progress\n");
 				printf("[");
-				for(int i = 0; i < rint(percentage) - 1; i++){
+				for(int i = 0; i < rint(percentage / 2) - 1; i++){
 					printf("#");
 				}
-				for(int i = 0; i < 100 - percentage - 1; i++){
+				for(int i = 0; i < 100 / 2 - (percentage - 1); i++){
 					printf(" ");
 				}
 				
