@@ -24,7 +24,7 @@ void free_energy() {
 	old_en = en_tot;
 
 	if (cycle % check_every == 0) {
-		printf("En_LDG: %lf, En_L1: %lf, ", l_en_ldg, en_el[0], en_surf[0], en_surf[1], cycle);
+		printf("En_LDG: %lf, En_L1: %lf, ", l_en_ldg, en_el[0]);
 		if(en_el[1] != 0){
 			printf("En_L2: %lf, ", en_el[1]);
 		}
