@@ -342,7 +342,7 @@ int main() {
 
 		while (flag) {
 
-			printf("\t\t\t\t\t\t ~Computing Energy~ \n");
+			printf("\t\t ~Computing Energy~ \n");
  			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
@@ -413,9 +413,26 @@ int main() {
 				//
 
 			}
-			printf("\n");
 			printf("\033[0m\n");
-			system("clear");
+			printf("\n");
+
+			if(stopat != 0){
+
+				double percentage = (double)cycle / (double)stopat * 100.;
+
+				printf("Total Progress\n");
+				printf("[");
+				for(int i = 0; i < rint(percentage) - 1; i++){
+					printf("#");
+				}
+				for(int i = 0; i < 100 - percentage - 1; i++){
+					printf(" ");
+				}
+				
+				printf("] %.2lf%\n", percentage);
+			}
+
+			//system("clear");
 			//printf("\n\t\t\t ~Done~ \n\n");
 
 			// flag=false;
