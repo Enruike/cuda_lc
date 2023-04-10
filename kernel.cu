@@ -426,7 +426,7 @@ int main() {
 				for(int i = 0; i < rint(percentage / 2); i++){
 					printf("#");
 				}
-				for(int i = 0; i < rint(100 / 2) - rint(percentage - 1); i++){
+				for(int i = 0; i < rint(100 / 2) - rint(percentage); i++){
 					printf(" ");
 				}
 				
