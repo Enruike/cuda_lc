@@ -376,7 +376,7 @@ int main() {
 				output();
 			}
 
-			printf("/t ~Relaxing~ \n");
+			printf("\t\t\t\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			printf("\t");
@@ -414,7 +414,7 @@ int main() {
 			}
 			
 			printf("\033[0m");
-			printf("\n\t ~Done~ \n");
+			printf("\n\t\t\t\t ~Done~ \n");
 
 			// flag=false;
 			printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
