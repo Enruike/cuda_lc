@@ -380,7 +380,7 @@ int main() {
 
 			printf("\033[1;33m");
 			printf("\t");
-			for(int i = 0; i < 30; i++){
+			for(int i = 0; i < 50; i++){
 				//std::cout << "\x2592";
 				printf(shade);
 			}
@@ -388,9 +388,11 @@ int main() {
 			printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
-				if((cycle%(check_every/10)==0)){
+				if((cycle%(check_every/5)==0)){
+					printf(shade2);
 					printf(shade2);
 				}
+
 
 				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, bulk, idx, idy, idz,
 					iddx, iddy, iddz, dt);
@@ -411,6 +413,7 @@ int main() {
 				//
 
 			}
+			
 			printf("\033[0m");
 			printf("                    <<<=== ~ Done ~ ===>>>\n");
 
