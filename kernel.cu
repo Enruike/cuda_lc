@@ -35,7 +35,8 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 		tr = (d_Qold[indx * 6 + 0] + d_Qold[indx * 6 + 3] + d_Qold[indx * 6 + 5]) * third;
 
 		if(tr > 1e-5) {
-			printf("Correcting trace for node %d!\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
+			printf("\033[1;31m");
+			printf("Correcting trace for node %d!\033[0m\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
 				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
 
 			d_Qold[indx * 6 + 0] -= tr;
@@ -376,7 +377,7 @@ int main() {
 				output();
 			}
 
-			printf("\t\t\t\t ~Relaxing~ \n");
+			printf("\n\t\t\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			printf("\t");
@@ -414,7 +415,7 @@ int main() {
 			}
 			
 			printf("\033[0m");
-			printf("\n\t\t\t\t ~Done~ \n");
+			printf("\n\t\t\t ~Done~ \n\n");
 
 			// flag=false;
 			printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
