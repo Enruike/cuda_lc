@@ -388,8 +388,7 @@ int main() {
 			printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
-				if((cycle%(check_every/5)==0)){
-					printf(shade2);
+				if((cycle%(check_every/20)==0)){
 					printf(shade2);
 				}
 
