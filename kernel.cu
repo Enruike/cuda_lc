@@ -429,7 +429,7 @@ int main() {
 					printf(" ");
 				}
 				
-				printf("] %.2lf%\n", percentage);
+				printf("] %.2lf%\n\n", percentage);
 			}
 
 			//system("clear");
