@@ -342,7 +342,7 @@ int main() {
 
 		while (flag) {
 
-			printf("\t\t\t\t ~Computing Energy~ \n");
+			printf("\t\t\t\t\t\t ~Computing Energy~ \n");
  			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
@@ -377,7 +377,7 @@ int main() {
 				output();
 			}
 
-			printf("\n\t\t ~Relaxing~ \n");
+			printf("\t\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			//printf("\t");
@@ -415,6 +415,7 @@ int main() {
 			}
 			printf("\n");
 			printf("\033[0m\n");
+			system("clear");
 			//printf("\n\t\t\t ~Done~ \n\n");
 
 			// flag=false;
