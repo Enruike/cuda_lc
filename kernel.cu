@@ -379,13 +379,13 @@ int main() {
 			printf("            <<========== ~Relaxing~ ==========>>\n");
 
 			printf("\033[1;33m");
-			printf("\t")
+			printf("\t");
 			for(int i = 0; i < 30; i++){
 				//std::cout << "\x2592";
 				printf(shade);
 			}
 			printf("\r");
-			printf("\t")
+			printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
 				if((cycle%(check_every/10)==0)){
