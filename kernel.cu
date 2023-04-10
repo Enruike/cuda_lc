@@ -377,7 +377,7 @@ int main() {
 				output();
 			}
 
-			printf("\n\t\t\t ~Relaxing~ \n");
+			printf("\t\t\t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			printf("\t");
@@ -415,10 +415,10 @@ int main() {
 			}
 			
 			printf("\033[0m");
-			printf("\n\t\t\t ~Done~ \n\n");
-
+			//printf("\n\t\t\t ~Done~ \n\n");
+			
 			// flag=false;
-			printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
+			//printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
 			cudaStatus = cudaMemcpy(Qold, d_Qold, droplet * 6 * sizeof(double), cudaMemcpyDeviceToHost);
 			if (cudaStatus != cudaSuccess) {
 				fprintf(stderr, "cudaMemcpy failed!\n");
