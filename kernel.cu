@@ -389,7 +389,7 @@ int main() {
 			if((cycle % save_every) == 0){
 				printf("\x1b[32m");
 				printf("\t\t ~Saving Data~ \n");
-				printf("\033[0m\n");
+				printf("\033[0m");
 				output();
 			}
 
