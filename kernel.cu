@@ -376,7 +376,7 @@ int main() {
 				output();
 			}
 
-			printf("            <<========== ~Relaxing~ ==========>>\n");
+			printf("/t ~Relaxing~ \n");
 
 			printf("\033[1;33m");
 			printf("\t");
@@ -388,7 +388,7 @@ int main() {
 			printf("\t");
 			for (int i = 0; i < check_every; i++) {
 
-				if((cycle%(check_every/20)==0)){
+				if((cycle%(check_every/100)==0)){
 					printf(shade2);
 				}
 
@@ -414,7 +414,7 @@ int main() {
 			}
 			
 			printf("\033[0m");
-			printf("                    <<<=== ~ Done ~ ===>>>\n");
+			printf("\n\t ~Done~ \n");
 
 			// flag=false;
 			printf("      <<=== ~Copying Q-Tensor back to Host Memory~ ===>>>\n");
