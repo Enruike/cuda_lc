@@ -1,5 +1,5 @@
 #37 for K80 GPUs and 75 for Turing architecture GPUs
-ARCH = 37 
+ARCH = 37
 OBJS = configurations.o ellipsoid.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o
 
 all: lc_cuda
