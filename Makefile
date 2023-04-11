@@ -1,6 +1,6 @@
 #37 for K80 GPUs and 75 for Turing architecture GPUs
 ARCH = 37 
-OBJS = configurations ellipsoid energy functions initial read_parameters relaxation kernel
+OBJS = configurations ellipsoid energy functions initial read_parameters relaxations kernel
 
 all: lc_cuda
 
@@ -25,7 +25,7 @@ initial.o: initial.cpp initial.hpp
 read_parameters.o: read_parameters.cpp read_parameters.hpp
 	nvcc -c read_parameters.cpp
 
-relaxation.o: relaxation.cu definitions.cuh
+relaxations.o: relaxations.cu definitions.cuh
 	nvcc -c relaxation.cu
 
 kernel.o: kernel.cu definitions.cuh
