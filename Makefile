@@ -2,13 +2,13 @@
 ARCH = 37
 OBJS = configurations.o ellipsoid.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o
 FILES = configurations.cu ellipsoid.cpp energy.cpp functions.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
-HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp 
+HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp
 NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 
 all: lc_cuda
 
 lc_cuda: $(FILES) $(HEADERS) #$(OBJS)
-	nvcc -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda $(FILES)
+	nvcc -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES)
 
 #configurations.o: configurations.cu definitions.cuh
 #	nvcc -c configurations.cu
@@ -35,6 +35,6 @@ lc_cuda: $(FILES) $(HEADERS) #$(OBJS)
 # 	nvcc -c kernel.cu
 
 clean:
-	rm -f lc_cuda $(OBJS)
+	rm -f lc_cuda.x $(OBJS)
 
 #nvcc *.cpp *.cu -O2 -w --fmad=false -gencode=arch=compute_37,code=sm_37 -o lc_cuda.x
