@@ -7,8 +7,8 @@ all: lc_cuda
 lc_cuda: $(OBJS)
 	nvcc $(OBJS) -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH)
 
-configurations.o: configurations.cpp definitions.cuh
-	nvcc -c configurations.cpp
+configurations.o: configurations.cu definitions.cuh
+	nvcc -c configurations.cu
 
 ellipsoid.o: ellipsoid.cpp geometry.hpp
 	nvcc -c ellipsoid.cpp
