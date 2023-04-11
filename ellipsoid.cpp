@@ -17,17 +17,17 @@ bool ellipsoid() {
 	int l = 0, bulk = 0, innerbulk = 0, outerbulk = 0;
 	double dVi = 0.0, dVo = 0.0;
 	
-	dx = Lx / (Nx - 1);
-	dy = Ly / (Ny - 1);
-	dz = Lz / (Nz - 1);
+	dx = Lx / (double)(Nx - 1);
+	dy = Ly / (double)(Ny - 1);
+	dz = Lz / (double)(Nz - 1);
 
 	rx = lrint(Nx / 2) - 1;
 	ry = lrint(Ny / 2) - 1;
 	rz = lrint(Nz / 2) - 1;
 	
-	double Rx = Lx / 2 - 2;
-	double Ry = Ly / 2 - 2;
-	double Rz = Lz / 2 - 2;
+	double Rx = Lx / 2. - 2.;
+	double Ry = Ly / 2. - 2.;
+	double Rz = Lz / 2. - 2.;
 
 	surf = 0;
 	
@@ -255,12 +255,12 @@ bool ellipsoid() {
 					neighbor[nd * 6 + 5] = qindex[i + j * Nx + (k + 1) * Nx * Ny];
 				}
 				else if (boundary[l]) {
-					x = (i - rx) * dx;
-					y = (j - ry) * dy;
-					z = (k - rz) * dz;
+					x = (double)(i - rx) * dx;
+					y = (double)(j - ry) * dy;
+					z = (double)(k - rz) * dz;
 					dis = sqrt(x * x + y * y + z * z);
 
-					if (dis == 0) {
+					if (dis == 0.) {
 						printf("Error in neighbors' boundary.\n");
 						return false;
 					}
