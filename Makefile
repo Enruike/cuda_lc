@@ -26,7 +26,7 @@ read_parameters.o: read_parameters.cpp read_parameters.hpp
 	nvcc -c read_parameters.cpp
 
 relaxations.o: relaxations.cu definitions.cuh
-	nvcc -c relaxation.cu
+	nvcc -c relaxations.cu
 
 kernel.o: kernel.cu definitions.cuh
 	nvcc -c kernel.cu
