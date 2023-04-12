@@ -1,5 +1,5 @@
 #37 for K80 GPUs and 75 for Turing architecture GPUs
-ARCH = 37
+ARCH = 75
 OBJS = configurations.o ellipsoid.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o
 FILES = configurations.cu ellipsoid.cpp energy.cpp functions.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
 HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp
