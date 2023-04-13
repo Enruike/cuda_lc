@@ -35,7 +35,7 @@ void free_energy() {
 			printf("En_L4: %lf, ", en_el[3]);
 		}
 		printf("En_Chiral: %lf, En_Surf1: %lf, ", en_el[4], en_surf[0]);
-		if(en_surf[2] != 0){
+		if(en_surf[1] != 0){
 			printf("En_Surf2: %lf ", en_surf[1]);
 		}
 		printf("Cycle: %d\n", cycle);

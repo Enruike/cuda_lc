@@ -33,6 +33,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		// 	printf("iddx %lf iddy %lf iddz %lf\n", iddx, iddy, iddz);
 		// }
 
+		//This could be converted to local memory
 		Qin[0] = d_Qold[d_Qtensor_index[indx] * 6 + 0];
 		Qin[1] = d_Qold[d_Qtensor_index[indx] * 6 + 1];
 		Qin[2] = d_Qold[d_Qtensor_index[indx] * 6 + 2];
@@ -40,6 +41,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		Qin[4] = d_Qold[d_Qtensor_index[indx] * 6 + 4];
 		Qin[5] = d_Qold[d_Qtensor_index[indx] * 6 + 5];
 
+		//This could be registers.
 		QQ[0] = Qin[0] * Qin[0] + Qin[1] * Qin[1] + Qin[2] * Qin[2];
 		QQ[1] = Qin[0] * Qin[1] + Qin[1] * Qin[3] + Qin[2] * Qin[4];
 		QQ[2] = Qin[0] * Qin[2] + Qin[1] * Qin[4] + Qin[2] * Qin[5];
@@ -47,9 +49,11 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		QQ[4] = Qin[1] * Qin[2] + Qin[3] * Qin[4] + Qin[4] * Qin[5];
 		QQ[5] = Qin[2] * Qin[2] + Qin[4] * Qin[4] + Qin[5] * Qin[5];
 
+		//Also a register.
 		trQQ = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
 			+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
 
+		//We also need to change the thread access global memory and bring it to a lower level.
 		if (d_bulktype[d_Qtensor_index[indx]] == 1) {
 			for (int i = 0; i < 6; i++) {
 				Qldg[i] = (1 - U * devThird) * Qin[i] - U * (QQ[i] - trQQ * (Qin[i] + delta[i] * devThird));
