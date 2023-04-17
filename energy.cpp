@@ -112,7 +112,7 @@ void elastic_energy(double ans[5]) {
 		}
 	}
 	ans[0] *= 0.5 * dV * L1;
-	ans[4] *= dV * chiral * 2 * L1 * qch;
+	ans[4] *= dV * (double)chiral * 2. * L1 * qch;
 }
 
 void surface_energy(double ans[2]) {

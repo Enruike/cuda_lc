@@ -54,37 +54,61 @@ bool ellipsoid() {
 		qindex[i] = -1;
 	}
 
-	//Defining the droplet. 
-	for (int k = 0; k < Nz; k++) {
-		for (int j = 0; j < Ny; j++) {
-			for (int i = 0; i < Nx; i++) {
+	if(DoubleU){
+		//Defining the droplet. 
+		for (int k = 0; k < Nz; k++) {
+			for (int j = 0; j < Ny; j++) {
+				for (int i = 0; i < Nx; i++) {
 
-				//We set dx, dy and dz to 1
-				x = ((double)i - rx) * dx;
-				y = ((double)j - ry) * dy;
-				z = ((double)k - rz) * dz;
+					//We set dx, dy and dz to 1
+					x = (double)(i - rx) * dx;
+					y = (double)(j - ry) * dy;
+					z = (double)(k - rz) * dz;
 
-				if ( ((x * x) / ((Rx + 0.5) * (Rx + 0.5)) + (y * y) / ((Ry + 0.5) * (Ry + 0.5)) + (z * z) / ((Rz + 0.5) * (Rz + 0.5)) ) <= 1) {
-					drop[l] = true;
-					bulk++;
+					if ( ((x * x) / ((Rx + 0.5) * (Rx + 0.5)) + (y * y) / ((Ry + 0.5) * (Ry + 0.5)) + (z * z) / ((Rz + 0.5) * (Rz + 0.5)) ) <= 1) {
+						drop[l] = true;
+						bulk++;
 
-					//A�adimos un if anidado para determinar el bulk externo.
-					if ( ((x * x) / ((iRx + 0.5) * (iRx + 0.5)) + (y * y) / ((iRy + 0.5) * (iRy + 0.5)) + (z * z) / ((iRz + 0.5) * (iRz + 0.5)) ) <= 1) {
-						//for inner bulk
-						bulktype[l] = 1; //bulk interno.
-						innerbulk++;
+						//A�adimos un if anidado para determinar el bulk externo.
+						if ( ((x * x) / ((iRx + 0.5) * (iRx + 0.5)) + (y * y) / ((iRy + 0.5) * (iRy + 0.5)) + (z * z) / ((iRz + 0.5) * (iRz + 0.5)) ) <= 1) {
+							//for inner bulk
+							bulktype[l] = 1; //bulk interno.
+							innerbulk++;
+						}
+						else {
+							//for outer bulk
+							bulktype[l] = 2; //para bulk externo.
+							outerbulk++;
+						}
+
 					}
-					else {
-						//for outer bulk
-						bulktype[l] = 2; //para bulk externo.
-						outerbulk++;
-					}
-
+					l++;
 				}
-				l++;
 			}
 		}
 	}
+	else{
+		for (int k = 0; k < Nz; k++) {
+			for (int j = 0; j < Ny; j++) {
+				for (int i = 0; i < Nx; i++) {
+
+					//We set dx, dy and dz to 1
+					x = (double)(i - rx) * dx;
+					y = (double)(j - ry) * dy;
+					z = (double)(k - rz) * dz;
+
+					if ( ((x * x) / ((Rx + 0.5) * (Rx + 0.5)) + (y * y) / ((Ry + 0.5) * (Ry + 0.5)) + (z * z) / ((Rz + 0.5) * (Rz + 0.5)) ) <= 1) {
+						
+						drop[l] = true;
+						bulk++;
+
+					}
+					l++;
+				}
+			}
+		}
+	}
+	
 
 	droplet = bulk;
 
@@ -273,7 +297,8 @@ bool ellipsoid() {
 					//In this case, we omit the Double U code condition.
 					//Surface is S2.
 
-					if (infinite == 1) {
+					if(DoubleU){
+						if (infinite == 1) {
 						Qold[nd * 6 + 0] = dir2ten(&nu[nb * 3], 0, S2);
 						Qold[nd * 6 + 1] = dir2ten(&nu[nb * 3], 1, S2);
 						Qold[nd * 6 + 2] = dir2ten(&nu[nb * 3], 2, S2);
@@ -289,6 +314,24 @@ bool ellipsoid() {
 						Qo[nb * 6 + 4] = dir2ten(&nu[nb * 3], 4, S2);
 						Qo[nb * 6 + 5] = dir2ten(&nu[nb * 3], 5, S2);
 					}
+					}
+					else{
+						//infinite, define qtensor and don't evolve any more
+						//homeotropic noninfinite, define qo
+						if(infinite == 1){
+			
+							for(n = 0; n < 6; n ++){
+								Qold[nd * 6 + n] = dir2ten(&nu[nb * 3], n, S);
+							}	
+
+						}
+						else if(degenerate == 0 && infinite == 0){
+							for(n = 0; n < 6; n ++){
+								Qo[nb * 6 + n] = dir2ten(&nu[nb * 3], n, S);
+							}		
+						}
+					}
+					
 
 					//Define boundaries.
 					if (nu[nb * 3 + 0] >= 0) {

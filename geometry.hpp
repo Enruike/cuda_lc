@@ -39,3 +39,4 @@ extern double iRx, iRy, iRz;
 extern int degenerate, infinite;
 extern int seed;
 extern double S, S2;
+extern bool DoubleU;
