@@ -1,14 +1,15 @@
 #37 for K80 GPUs and 75 for Turing architecture GPUs
 ARCH = 75
 OBJS = configurations.o ellipsoid.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o
+OBJ = energy.o
 FILES = configurations.cu ellipsoid.cpp functions.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
 HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp
 NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 
 all: lc_cuda.x
 
-lc_cuda.x: $(FILES) $(HEADERS) energy.o #$(OBJS)
-	nvcc -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES)
+lc_cuda.x: $(FILES) $(HEADERS) $(OBJ)
+	nvcc -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES) $(OBJ)
 
 #configurations.o: configurations.cu definitions.cuh
 #	nvcc -c configurations.cu
