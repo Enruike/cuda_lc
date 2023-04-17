@@ -320,13 +320,13 @@ bool ellipsoid() {
 						//homeotropic noninfinite, define qo
 						if(infinite == 1){
 			
-							for(n = 0; n < 6; n ++){
+							for(int n = 0; n < 6; n ++){
 								Qold[nd * 6 + n] = dir2ten(&nu[nb * 3], n, S);
 							}	
 
 						}
 						else if(degenerate == 0 && infinite == 0){
-							for(n = 0; n < 6; n ++){
+							for(int n = 0; n < 6; n ++){
 								Qo[nb * 6 + n] = dir2ten(&nu[nb * 3], n, S);
 							}		
 						}
