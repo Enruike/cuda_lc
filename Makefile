@@ -8,7 +8,7 @@ NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 all: lc_cuda.x
 
 lc_cuda.x: $(FILES) $(HEADERS) #$(OBJS)
-	nvcc -O3 -w --fmad=false -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES)
+	nvcc -O2 -w -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES)
 
 #configurations.o: configurations.cu definitions.cuh
 #	nvcc -c configurations.cu
