@@ -26,8 +26,8 @@ double dir2ten(double* vec, int n, double S) {
 
 double trqq(double* Q) {
 	double ans = 0.;
-	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
-		+ 2. * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
+	ans = Q[0] * Q[0] + Q[3] * Q[3] + Q[5] * Q[5]\
+		+ 2. * (Q[1] * Q[1] + Q[2] * Q[2] + Q[4] * Q[4]);
 	return ans;
 }
 
