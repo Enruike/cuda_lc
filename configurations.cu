@@ -82,9 +82,9 @@ bool conf() {
                     if (drop[l] || boundary[l]) {
                         if (seed == 4) {
 
-                            x = (i - Rx) * cst * isq2;
-                            y = (j - Ry) * cst * isq2;
-                            z = (k - Rz) * cst * isq2;
+                            x = (i - rx) * cst * isq2;
+                            y = (j - ry) * cst * isq2;
+                            z = (k - rz) * cst * isq2;
 
                             Qold[nd * 6 + 0] = A * (-sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
                             Qold[nd * 6 + 3] = A * (-sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
@@ -97,9 +97,9 @@ bool conf() {
 
                         else if (seed == 5) {
 
-                            x = i - Rx;
-                            y = j - Ry;
-                            z = k - Rz;
+                            x = i - rx;
+                            y = j - ry;
+                            z = k - rz;
 
                             Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
                             Qold[nd * 6 + 1] = A * sin(cst * z);
