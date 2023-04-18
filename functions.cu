@@ -24,18 +24,18 @@ double dir2ten(double* vec, int n, double S) {
 	return 0;
 }
 
-double trqq(double Qin[6]) {
+double trqq(double* Q) {
 	double ans = 0.;
 	ans = Qin[0] * Qin[0] + Qin[3] * Qin[3] + Qin[5] * Qin[5]\
-		+ 2 * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
+		+ 2. * (Qin[1] * Qin[1] + Qin[2] * Qin[2] + Qin[4] * Qin[4]);
 	return ans;
 }
 
-double trqqq(double Q[6]) {
+double trqqq(double* Q) {
 	double ans = 0;
 	ans = Q[0] * Q[0] * Q[0] + Q[3] * Q[3] * Q[3] + Q[5] * Q[5] * Q[5]\
-		+ 6 * Q[1] * Q[2] * Q[4] + 3 * Q[0] * (Q[1] * Q[1] + Q[2] * Q[2])\
-		+ 3 * Q[3] * (Q[1] * Q[1] + Q[4] * Q[4]) + 3 * Q[5] * (Q[4] * Q[4] + Q[2] * Q[2]);
+		+ 6. * Q[1] * Q[2] * Q[4] + 3 * Q[0] * (Q[1] * Q[1] + Q[2] * Q[2])\
+		+ 3. * Q[3] * (Q[1] * Q[1] + Q[4] * Q[4]) + 3. * Q[5] * (Q[4] * Q[4] + Q[2] * Q[2]);
 	return ans;
 }
 

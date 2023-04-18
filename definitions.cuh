@@ -85,11 +85,10 @@ extern bool initial();
 //Other Functions
 extern double dir2ten(double* vec, int n, double S);
 extern bool conf();
-extern double trqq(double Qin[6]);
-extern double trqqq(double Q[6]);
+extern double trqq(double* Q);
+extern double trqqq(double* Q);
 extern bool norm_v(double* vec);
 
-__device__ double d_trqq(double Qin[6]);
 //extern __device__ __constant__ double devThird;
 
 //Energy functions
