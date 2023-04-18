@@ -66,10 +66,10 @@ double ldg_energy(double* Qold) {
 			traceq = trqqq(Qin);
 
 			if (h_bulktype[i] == 1) {
-				ldg_ans += 0.5 * (1 - U / 3.) * trace - U / 3. * traceq + U * 0.25 * trace * trace;
+				ldg_ans += 0.5 * (1. - U / 3.) * trace - U / 3. * traceq + U * 0.25 * trace * trace;
 			}
 			else if (h_bulktype[i] == 2) {
-				ldg_ans += 0.5 * (1 - U2 / 3.) * trace - U2 / 3. * traceq + U2 * 0.25 * trace * trace;
+				ldg_ans += 0.5 * (1. - U2 / 3.) * trace - U2 / 3. * traceq + U2 * 0.25 * trace * trace;
 			}
 		}
 	}
@@ -121,7 +121,7 @@ void surface_energy(double ans[2]) {
 	double Qin[6] = { 0 };
 	double loc_nu[3] = { 0 };
 	int degen = 0, inf = 1;
-	double Wstr = 0;
+	double Wstr = 0.;
 	bool npboundary = true;
 
 	for (int i = 0; i < droplet; i++) {
