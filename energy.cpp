@@ -49,8 +49,8 @@ double ldg_energy(double* Qold) {
 
 	double Qin[6] = { 0. };
 	double ldg_ans = 0.;
-	double trace = 0.;
-	double traceq = 0.;
+	double trace2 = 0.;
+	double trace3 = 0.;
 
 	for (int i = 0; i < droplet; i++) {
 		if (signal[i] == 0 || signal[i] == 1) {
@@ -62,14 +62,14 @@ double ldg_energy(double* Qold) {
 			Qin[4] = Qold[i * 6 + 4];
 			Qin[5] = Qold[i * 6 + 5];
 
-			trace = trqq(Qin);
-			traceq = trqqq(Qin);
+			trace2 = trqq(Qin);
+			trace3 = trqqq(Qin);
 
 			if (h_bulktype[i] == 1) {
-				ldg_ans += 0.5 * (1. - U / 3.) * trace - U / 3. * traceq + U * 0.25 * trace * trace;
+				ldg_ans += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 			}
 			else if (h_bulktype[i] == 2) {
-				ldg_ans += 0.5 * (1. - U2 / 3.) * trace - U2 / 3. * traceq + U2 * 0.25 * trace * trace;
+				ldg_ans += 0.5 * (1. - U2 / 3.) * trace2 - U2 / 3. * trace3 + U2 * 0.25 * trace2 * trace2;
 			}
 		}
 	}
