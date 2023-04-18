@@ -164,11 +164,14 @@ bool ellipsoid() {
 	dVo = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)outerbulk;
 	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075)) / (double)surf;
 
+	printf("Internal nodes count = %d\nExternal nodes count = %d\n", innerbulk, outerbulk);
+	printf("External bulk count contains surface nodes!!\n");
+	printf("External count after substracting surface nodes is %d\n", outerbulk - surf);
 	printf("dV = %lf\n", dV);
 	printf("dVi = %lf\n", dVi);
 	printf("dVo = %lf\n", dVo);
 	printf("dA = %lf\n", dA);
-
+	
 
 	//Allocating memory for surface vectors and tensors
 	nu = (double*)malloc(surf * 3 * sizeof(double));
