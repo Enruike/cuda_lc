@@ -51,6 +51,7 @@ double ldg_energy(double* Qold) {
 	double ldg_ans = 0.;
 	double trace2 = 0.;
 	double trace3 = 0.;
+	int contador = 0;
 
 	for (int i = 0; i < droplet; i++) {
 		if (signal[i] == 0 || signal[i] == 1) {
@@ -71,8 +72,11 @@ double ldg_energy(double* Qold) {
 			else if (h_bulktype[i] == 2) {
 				ldg_ans += 0.5 * (1. - U2 / 3.) * trace2 - U2 / 3. * trace3 + U2 * 0.25 * trace2 * trace2;
 			}
+			contador++;
 		}
 	}
+
+	printf("El contador es igual a %d\n", contador);
 
 	return dV * ldg_ans;
 }
