@@ -133,24 +133,24 @@ bool conf() {
                         if(seed == 6){
 
                             if(geo == -2){
-                                xi = (i - Nx * 0.5) * cst * isq2;
+                                xi = (i - rx) * cst * isq2;
                                 yi = (j - 2) * cst * isq2;
                                 zi = k * cst * isq2;	
                             }
 
                             else if(geo == -3){
 
-                                xi = (i - Nx * 0.5) * cst * isq2;
+                                xi = (i - rx) * cst * isq2;
                                 yi = (j - 2) * cst * isq2;
-                                zi = (k - Nz * 0.5) * cst * isq2;
+                                zi = (k - rz) * cst * isq2;
 
                             }
 
                             else{
 
-                                xi = (i - Nx * 0.5) * cst * isq2;
-                                yi = (j - Ny * 0.5) * cst * isq2;
-                                zi = (k - Nz * 0.5) * cst * isq2;
+                                xi = (i - rx) * cst * isq2;
+                                yi = (j - ry) * cst * isq2;
+                                zi = (k - rz) * cst * isq2;
 
                             }
                             
@@ -167,9 +167,10 @@ bool conf() {
                         }
                         
                         else if(seed == 7){
-                            xi = i - Nx * 0.5;
-                            yi = j - Ny * 0.5;
-                            zi = k - Nz * 0.5;
+                            xi = i - rx;
+                            yi = j - ry;
+                            zi = k - rz;
+
                             x = xi;
                             y = cos(theta) * yi + sin(theta) * zi;
                             z = -sin(theta) * yi + cos(theta) * zi;
@@ -185,9 +186,9 @@ bool conf() {
 
                         else if(seed == 8){    //8 and 9, (111) planes oriented
 
-                            xi = (i - Nx * 0.5) * cst * isq2;
-                            yi = (j - Ny * 0.5) * cst * isq2;
-                            zi = (k - Nz * 0.5) * cst * isq2;
+                            xi = (i - rx) * cst * isq2;
+                            yi = (j - ry) * cst * isq2;
+                            zi = (k - rz) * cst * isq2;
                             
                             theta=atan(1.0/sqrt(2.0));
                             //BPI_(211)
@@ -216,20 +217,20 @@ bool conf() {
                         else if(seed == 9){
 
                             if(geo == -2){
-                                xi = i - Nx * 0.5;
+                                xi = i - rx;
                                 yi = j - 2;
                                 zi = k;
                             }
                             
                             else if(geo == -3){
-                                xi = i - Nx * 0.5;
+                                xi = i - rx;
                                 yi = j - 2;
-                                zi = k - Nz * 0.5;
+                                zi = k - rz;
                             }
                             else{
-                                xi = i - Nx * 0.5;
-                                yi = j - Ny * 0.5;
-                                zi = k - Nz * 0.5;
+                                xi = i - rx;
+                                yi = j - ry;
+                                zi = k - rz;
                             }
                                                 
                             theta=atan(sqrt(2.0));
@@ -392,9 +393,9 @@ bool conf() {
 						if(drop[l] || boundary[l]){ // || nboundary[l]){
 							if(seed == 114 || seed == 124 || seed == 134){
 
-								x = (i - Nx * 0.5) * cst * isq2;
-								y = (j - Ny * 0.5) * cst * isq2;
-								z = (k - Nz * 0.5) * cst * isq2;
+								x = (i - rx) * cst * isq2;
+								y = (j - ry) * cst * isq2;
+								z = (k - rz) * cst * isq2;
 						
 								Qold[nd * 6 + 0] = A * (- sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
 								Qold[nd * 6 + 3] = A * (- sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
@@ -406,9 +407,9 @@ bool conf() {
 
 							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141){
 										
-								x = i - Nx * 0.5;
-								y = j - Ny * 0.5;
-								z = k - Nz * 0.5;
+								x = i - rx;
+								y = j - ry;
+								z = k - rz;
 
 								Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
 								Qold[nd * 6 + 1] = A * sin(cst * z);
@@ -420,9 +421,9 @@ bool conf() {
 
 							else if(seed == 116  || seed == 126 || seed == 136){
 
-								xi = (i - Nx * 0.5) * cst * isq2;
-								yi = (j - Ny * 0.5) * cst * isq2;
-								zi = (k - Nz * 0.5) * cst * isq2;
+								xi = (i - rx) * cst * isq2;
+								yi = (j - ry) * cst * isq2;
+								zi = (k - rz) * cst * isq2;
 								
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -438,9 +439,9 @@ bool conf() {
 													
 							else if (seed == 142){
 							
-								xi = i - Nx * 0.5;
-                        		yi = j - Ny * 0.5;
-                            	zi = k - Nz * 0.5;
+								xi = i - rx;
+                        		yi = j - ry;
+                            	zi = k - rz;
 
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -455,9 +456,9 @@ bool conf() {
 
 							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143){
 
-								xi = i - Nx * 0.5;
-								yi = j - Ny * 0.5;
-								zi = k - Nz * 0.5;
+								xi = i - rx;
+								yi = j - ry;
+								zi = k - rz;
 													
 								theta=atan(sqrt(2.0));
 
