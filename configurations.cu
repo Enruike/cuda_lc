@@ -277,7 +277,8 @@ bool conf() {
 	else if(seed == 114 || seed == 116 || seed == 115 || seed == 119 ||	
 			seed == 124 || seed == 126 || seed == 125 || seed == 129 ||
 			seed == 134 || seed == 136 || seed == 135 || seed == 139 || 
-			seed == 141 || seed == 142 || seed == 143)
+			seed == 141 || seed == 142 || seed == 143 || 
+			seed == 874 || seed == 875 || seed == 876 || seed == 879)
 		{
 
 		srand(rand_seed);
@@ -385,17 +386,27 @@ bool conf() {
 						
 								nd ++;
 							}
+							else if(seed == 874 || seed == 875 || seed == 876 || seed == 879){
+								
+								dir[0] = cos(qch * (k - rz));
+								dir[1] = sin(qch * (k - rz));
+
+								for(int n = 0; n < 6; n ++){
+									Qold[nd * 6 + n] = dir2ten(dir, n, S);
+								}
+								nd ++;								
+							}
 						}
 					}
 
 					else if(bulktype[l] == 2){
 					
 						if(drop[l] || boundary[l]){ // || nboundary[l]){
-							if(seed == 114 || seed == 124 || seed == 134){
+							if(seed == 114 || seed == 124 || seed == 134 || seed == 874){
 
-								x = (i - rx) * cst * isq2;
-								y = (j - ry) * cst * isq2;
-								z = (k - rz) * cst * isq2;
+								x = (i - Nx * 0.5) * cst * isq2;
+								y = (j - Ny * 0.5) * cst * isq2;
+								z = (k - Nz * 0.5) * cst * isq2;
 						
 								Qold[nd * 6 + 0] = A * (- sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
 								Qold[nd * 6 + 3] = A * (- sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
@@ -405,11 +416,11 @@ bool conf() {
 								Qold[nd * 6 + 4] = A * (- sq2 * sin(y) * sin(x) - sq2 * cos(z) * cos(x) + sin(y) * cos(z));
 							}
 
-							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141){
+							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141 || seed == 875){
 										
-								x = i - rx;
-								y = j - ry;
-								z = k - rz;
+								x = i - Nx * 0.5;
+								y = j - Ny * 0.5;
+								z = k - Nz * 0.5;
 
 								Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
 								Qold[nd * 6 + 1] = A * sin(cst * z);
@@ -419,11 +430,11 @@ bool conf() {
 								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
 							}
 
-							else if(seed == 116  || seed == 126 || seed == 136){
+							else if(seed == 116  || seed == 126 || seed == 136 || seed == 876){
 
-								xi = (i - rx) * cst * isq2;
-								yi = (j - ry) * cst * isq2;
-								zi = (k - rz) * cst * isq2;
+								xi = (i - Nx * 0.5) * cst * isq2;
+								yi = (j - Ny * 0.5) * cst * isq2;
+								zi = (k - Nz * 0.5) * cst * isq2;
 								
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -439,9 +450,9 @@ bool conf() {
 													
 							else if (seed == 142){
 							
-								xi = i - rx;
-                        		yi = j - ry;
-                            	zi = k - rz;
+								xi = i - Nx * 0.5;
+                        		yi = j - Ny * 0.5;
+                            	zi = k - Nz * 0.5;
 
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -454,11 +465,11 @@ bool conf() {
 								Qold[nd * 6 + 4] = A * sin(cst * x);
 								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));}
 
-							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143){
+							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143 || seed == 879){
 
-								xi = i - rx;
-								yi = j - ry;
-								zi = k - rz;
+								xi = i - Nx * 0.5;
+								yi = j - Ny * 0.5;
+								zi = k - Nz * 0.5;
 													
 								theta=atan(sqrt(2.0));
 
