@@ -404,9 +404,9 @@ bool conf() {
 						if(drop[l] || boundary[l]){ // || nboundary[l]){
 							if(seed == 114 || seed == 124 || seed == 134 || seed == 874){
 
-								x = (i - Nx * 0.5) * cst * isq2;
-								y = (j - Ny * 0.5) * cst * isq2;
-								z = (k - Nz * 0.5) * cst * isq2;
+								x = (i - rx) * cst * isq2;
+								y = (j - ry) * cst * isq2;
+								z = (k - rz) * cst * isq2;
 						
 								Qold[nd * 6 + 0] = A * (- sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
 								Qold[nd * 6 + 3] = A * (- sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
@@ -418,9 +418,9 @@ bool conf() {
 
 							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141 || seed == 875){
 										
-								x = i - Nx * 0.5;
-								y = j - Ny * 0.5;
-								z = k - Nz * 0.5;
+								x = i - rx;
+								y = j - ry;
+								z = k - rz;
 
 								Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
 								Qold[nd * 6 + 1] = A * sin(cst * z);
@@ -432,9 +432,9 @@ bool conf() {
 
 							else if(seed == 116  || seed == 126 || seed == 136 || seed == 876){
 
-								xi = (i - Nx * 0.5) * cst * isq2;
-								yi = (j - Ny * 0.5) * cst * isq2;
-								zi = (k - Nz * 0.5) * cst * isq2;
+								xi = (i - rx) * cst * isq2;
+								yi = (j - ry) * cst * isq2;
+								zi = (k - rz) * cst * isq2;
 								
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -450,9 +450,9 @@ bool conf() {
 													
 							else if (seed == 142){
 							
-								xi = i - Nx * 0.5;
-                        		yi = j - Ny * 0.5;
-                            	zi = k - Nz * 0.5;
+								xi = i - rx;
+                        		yi = j - ry;
+                            	zi = k - rz;
 
 								x = xi;
 								y = cos(theta) * yi + sin(theta) * zi;
@@ -467,9 +467,9 @@ bool conf() {
 
 							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143 || seed == 879){
 
-								xi = i - Nx * 0.5;
-								yi = j - Ny * 0.5;
-								zi = k - Nz * 0.5;
+								xi = i - rx;
+								yi = j - ry;
+								zi = k - rz;
 													
 								theta=atan(sqrt(2.0));
 
