@@ -278,7 +278,8 @@ bool conf() {
 			seed == 124 || seed == 126 || seed == 125 || seed == 129 ||
 			seed == 134 || seed == 136 || seed == 135 || seed == 139 || 
 			seed == 141 || seed == 142 || seed == 143 || 
-			seed == 874 || seed == 875 || seed == 876 || seed == 879)
+			seed == 874 || seed == 875 || seed == 876 || seed == 879 ||
+			seed == 884 || seed == 885 || seed == 886 || seed == 879)
 		{
 
 		srand(rand_seed);
@@ -396,13 +397,25 @@ bool conf() {
 								}
 								nd ++;								
 							}
+							else if(seed == 884 || seed == 885 || seed == 886 || seed == 889){
+								l = 0;
+								nd = 0;
+							
+								dir[1] = cos(qch * (i - rx));
+								dir[2] = sin(qch * (i - rx));
+
+								for(int n = 0; n < 6; n ++){
+									Qold[nd * 6 + n] = dir2ten(dir, n, S);
+								}
+								nd ++;
+							}
 						}
 					}
 
 					else if(bulktype[l] == 2){
 					
 						if(drop[l] || boundary[l]){ // || nboundary[l]){
-							if(seed == 114 || seed == 124 || seed == 134 || seed == 874){
+							if(seed == 114 || seed == 124 || seed == 134 || seed == 874 || seed == 884){
 
 								x = (i - rx) * cst * isq2;
 								y = (j - ry) * cst * isq2;
@@ -416,7 +429,7 @@ bool conf() {
 								Qold[nd * 6 + 4] = A * (- sq2 * sin(y) * sin(x) - sq2 * cos(z) * cos(x) + sin(y) * cos(z));
 							}
 
-							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141 || seed == 875){
+							else if(seed == 115 || seed == 125 || seed == 135 || seed == 141 || seed == 875 || seed == 885){
 										
 								x = i - rx;
 								y = j - ry;
@@ -430,7 +443,7 @@ bool conf() {
 								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
 							}
 
-							else if(seed == 116  || seed == 126 || seed == 136 || seed == 876){
+							else if(seed == 116  || seed == 126 || seed == 136 || seed == 876 || seed == 886){
 
 								xi = (i - rx) * cst * isq2;
 								yi = (j - ry) * cst * isq2;
@@ -465,7 +478,7 @@ bool conf() {
 								Qold[nd * 6 + 4] = A * sin(cst * x);
 								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));}
 
-							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143 || seed == 879){
+							else if(seed == 119  || seed == 129 || seed == 139 || seed == 143 || seed == 879 || seed == 889){
 
 								xi = i - rx;
 								yi = j - ry;
