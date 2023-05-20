@@ -398,8 +398,6 @@ bool conf() {
 								nd ++;								
 							}
 							else if(seed == 884 || seed == 885 || seed == 886 || seed == 889){
-								l = 0;
-								nd = 0;
 							
 								dir[1] = cos(qch * (i - rx));
 								dir[2] = sin(qch * (i - rx));
