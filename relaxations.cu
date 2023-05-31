@@ -272,6 +272,41 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			ptemp[2][0] = - loc_nu[2] * loc_nu[0];
 			ptemp[2][1] = - loc_nu[2] * loc_nu[1];
 
+			Qp[0][0] = ptemp[0][0] * Qtemp[0][0] * ptemp[0][0] + ptemp[0][0] * Qtemp[0][1] * ptemp[1][0] + ptemp[0][0] * Qtemp[0][2] * ptemp[2][0]\
+						+ ptemp[0][1] * Qtemp[1][0] * ptemp[0][0] + ptemp[0][1] * Qtemp[1][1] * ptemp[1][0] + ptemp[0][1] * Qtemp[1][2] * ptemp[2][0]\
+						+ ptemp[0][2] * Qtemp[2][0] * ptemp[0][0] + ptemp[0][2] * Qtemp[2][1] * ptemp[1][0] + ptemp[0][2] * Qtemp[2][2] * ptemp[2][0];
+
+			Qp[0][1] = ptemp[0][0] * Qtemp[0][0] * ptemp[0][1] + ptemp[0][0] * Qtemp[0][1] * ptemp[1][1] + ptemp[0][0] * Qtemp[0][2] * ptemp[2][1]\
+						+ ptemp[0][1] * Qtemp[1][0] * ptemp[0][1] + ptemp[0][1] * Qtemp[1][1] * ptemp[1][1] + ptemp[0][1] * Qtemp[1][2] * ptemp[2][1]\
+						+ ptemp[0][2] * Qtemp[2][0] * ptemp[0][1] + ptemp[0][2] * Qtemp[2][1] * ptemp[1][1] + ptemp[0][2] * Qtemp[2][2] * ptemp[2][1];
+
+			Qp[0][2] = ptemp[0][0] * Qtemp[0][0] * ptemp[0][2] + ptemp[0][0] * Qtemp[0][1] * ptemp[1][2] + ptemp[0][0] * Qtemp[0][2] * ptemp[2][2]\
+						+ ptemp[0][1] * Qtemp[1][0] * ptemp[0][2] + ptemp[0][1] * Qtemp[1][1] * ptemp[1][2] + ptemp[0][1] * Qtemp[1][2] * ptemp[2][2]\
+						+ ptemp[0][2] * Qtemp[2][0] * ptemp[0][2] + ptemp[0][2] * Qtemp[2][1] * ptemp[1][2] + ptemp[0][2] * Qtemp[2][2] * ptemp[2][2];
+
+			Qp[1][0] = ptemp[1][0] * Qtemp[0][0] * ptemp[0][0] + ptemp[1][0] * Qtemp[0][1] * ptemp[1][0] + ptemp[1][0] * Qtemp[0][2] * ptemp[2][0]\
+						+ ptemp[1][1] * Qtemp[1][0] * ptemp[0][0] + ptemp[1][1] * Qtemp[1][1] * ptemp[1][0] + ptemp[1][1] * Qtemp[1][2] * ptemp[2][0]\
+						+ ptemp[1][2] * Qtemp[2][0] * ptemp[0][0] + ptemp[1][2] * Qtemp[2][1] * ptemp[1][0] + ptemp[1][2] * Qtemp[2][2] * ptemp[2][0];
+
+			Qp[1][1] = ptemp[1][0] * Qtemp[0][0] * ptemp[0][1] + ptemp[1][0] * Qtemp[0][1] * ptemp[1][1] + ptemp[1][0] * Qtemp[0][2] * ptemp[2][1]\
+						+ ptemp[1][1] * Qtemp[1][0] * ptemp[0][1] + ptemp[1][1] * Qtemp[1][1] * ptemp[1][1] + ptemp[1][1] * Qtemp[1][2] * ptemp[2][1]\
+						+ ptemp[1][2] * Qtemp[2][0] * ptemp[0][1] + ptemp[1][2] * Qtemp[2][1] * ptemp[1][1] + ptemp[1][2] * Qtemp[2][2] * ptemp[2][1];
+
+			Qp[1][2] = ptemp[1][0] * Qtemp[0][0] * ptemp[0][2] + ptemp[1][0] * Qtemp[0][1] * ptemp[1][2] + ptemp[1][0] * Qtemp[0][2] * ptemp[2][2]\
+						+ ptemp[1][1] * Qtemp[1][0] * ptemp[0][2] + ptemp[1][1] * Qtemp[1][1] * ptemp[1][2] + ptemp[1][1] * Qtemp[1][2] * ptemp[2][2]\
+						+ ptemp[1][2] * Qtemp[2][0] * ptemp[0][2] + ptemp[1][2] * Qtemp[2][1] * ptemp[1][2] + ptemp[1][2] * Qtemp[2][2] * ptemp[2][2];
+
+			Qp[2][0] = ptemp[2][0] * Qtemp[0][0] * ptemp[0][0] + ptemp[2][0] * Qtemp[0][1] * ptemp[1][0] + ptemp[2][0] * Qtemp[0][2] * ptemp[2][0]\
+						+ ptemp[2][1] * Qtemp[1][0] * ptemp[0][0] + ptemp[2][1] * Qtemp[1][1] * ptemp[1][0] + ptemp[2][1] * Qtemp[1][2] * ptemp[2][0]\
+						+ ptemp[2][2] * Qtemp[2][0] * ptemp[0][0] + ptemp[2][2] * Qtemp[2][1] * ptemp[1][0] + ptemp[2][2] * Qtemp[2][2] * ptemp[2][0];
+
+			Qp[2][1] = ptemp[2][0] * Qtemp[0][0] * ptemp[0][1] + ptemp[2][0] * Qtemp[0][1] * ptemp[1][1] + ptemp[2][0] * Qtemp[0][2] * ptemp[2][1]\
+						+ ptemp[2][1] * Qtemp[1][0] * ptemp[0][1] + ptemp[2][1] * Qtemp[1][1] * ptemp[1][1] + ptemp[2][1] * Qtemp[1][2] * ptemp[2][1]\
+						+ ptemp[2][2] * Qtemp[2][0] * ptemp[0][1] + ptemp[2][2] * Qtemp[2][1] * ptemp[1][1] + ptemp[2][2] * Qtemp[2][2] * ptemp[2][1];
+						
+			Qp[2][2] = ptemp[2][0] * Qtemp[0][0] * ptemp[0][2] + ptemp[2][0] * Qtemp[0][1] * ptemp[1][2] + ptemp[2][0] * Qtemp[0][2] * ptemp[2][2]\
+						+ ptemp[2][1] * Qtemp[1][0] * ptemp[0][2] + ptemp[2][1] * Qtemp[1][1] * ptemp[1][2] + ptemp[2][1] * Qtemp[1][2] * ptemp[2][2]\
+						+ ptemp[2][2] * Qtemp[2][0] * ptemp[0][2] + ptemp[2][2] * Qtemp[2][1] * ptemp[1][2] + ptemp[2][2] * Qtemp[2][2] * ptemp[2][2];
 			
 			/*
 			for(int i = 0; i < 3; i++){
