@@ -244,7 +244,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		if(degen == 1 || (d_Nvector_signal[indx] == 12 || d_Nvector_signal[indx] == 13)){
 
 			double Qtemp[3][3] = { 0. };
-			double ptemp[3][3] = { 0. };
+			/*double ptemp[3][3] = { 0. };
 			double Qp[3][3] = { 0. };
 			double nuQnu = 0;
 			Qtemp[0][0] = Qin[0] + devThird * S;
@@ -282,7 +282,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			Qdiff[3] =  Qtemp[1][1]- Qp[1][1] - nuQnu;
 			Qdiff[4] =  Qtemp[1][2]- Qp[1][2];
 			Qdiff[5] =  Qtemp[2][2]- Qp[2][2] - nuQnu;
-			printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]); 
+			printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]);*/
 			//relax_degen(Qin, loc_nu, Qdiff, S);
 
 			for (int n = 0; n < 6; n++) {
