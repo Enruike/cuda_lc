@@ -313,15 +313,15 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 					+ loc_nu[1]*Qtemp[1][0]*loc_nu[0] + loc_nu[1]*Qtemp[1][1]*loc_nu[1] + loc_nu[1]*Qtemp[1][2]*loc_nu[2]\
 					+ loc_nu[2]*Qtemp[2][0]*loc_nu[0] + loc_nu[2]*Qtemp[2][1]*loc_nu[1] + loc_nu[2]*Qtemp[2][2]*loc_nu[2]) * devThird;
 
-			if(indx == 200) printf("nuQnu is %lf", nuQnu);
-			if(indx == 200) printf("Qp is %lf", Qp[0][0]);
+			//if(indx == 200) printf("nuQnu is %lf", nuQnu);
+			//if(indx == 200) printf("Qp is %lf", Qp[0][0]);
 			Qdiff[0] =  Qtemp[0][0]- Qp[0][0] - nuQnu;
 			Qdiff[1] =  Qtemp[0][1]- Qp[0][1];
 			Qdiff[2] =  Qtemp[0][2]- Qp[0][2];
 			Qdiff[3] =  Qtemp[1][1]- Qp[1][1] - nuQnu;
 			Qdiff[4] =  Qtemp[1][2]- Qp[1][2];
 			Qdiff[5] =  Qtemp[2][2]- Qp[2][2] - nuQnu;
-			if(indx == 200) printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qtemp[0][0], Qtemp[0][1], Qtemp[0][2], Qtemp[1][1], Qtemp[1][2], Qtemp[2][2]);
+			//if(indx == 200) printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qtemp[0][0], Qtemp[0][1], Qtemp[0][2], Qtemp[1][1], Qtemp[1][2], Qtemp[2][2]);
 			//relax_degen(Qin, loc_nu, Qdiff, S);
 
 			for (int n = 0; n < 6; n++) {
