@@ -150,10 +150,10 @@ bool read_param() {
 		if (DoubleU) {
 			printf("Double U mode is activated.\n");
 			printf("U for outer shell = %lf\n", U2);
-			printf("Inner Radii iRx = %lf; iRy = %lf; iRz = %lf\n", iRx, iRy, iRz);
+			printf("Inner Radii iRx = %lf; iRy = %lf; iRz = %lf\n\n", iRx, iRy, iRz);
 		}
 		else {
-			printf("Double U mode is NOT activated.\n");
+			printf("Double U mode is NOT activated.\n\n");
 		}
 	
 

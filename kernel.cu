@@ -4,17 +4,11 @@
 cudaError_t cudaStatus;
 
 int total_points = 0;
-double S = 0.0, S2 = 0.0;
-double dE;
 double dt = 0.0;
 double dtime = 0.0;
 int cycle = 0;
 bool flag;
-double en_tot;
-double old_en;
-double en_ldg;
-double en_surf[2];
-double en_el[5];
+double S, S2;
 
 __device__ double d_trqq(double Qin[6]){
         double ans = 0.;
@@ -87,6 +81,7 @@ int main() {
 		printf("No file param.in found!\n");
 		//EXIT_SUCCESS();
 		return 0;
+		exit(1);
 	}
 
 	//continua con la funcion initial ubicada en initialization.cpp
@@ -120,21 +115,22 @@ int main() {
 		unsigned int* h_Nvector_index;
 		unsigned char* h_Nvector_signal;
 
-		h_Nvector_index = (unsigned int*)malloc(surf * sizeof(unsigned int));
-		h_Nvector_signal = (unsigned char*)malloc(surf * sizeof(unsigned char));
+		h_Nvector_index = (unsigned int*)malloc((surf + nsurf) * sizeof(unsigned int));
+		h_Nvector_signal = (unsigned char*)malloc((surf + nsurf) * sizeof(unsigned char));
 
 		unsigned int nb = 0;
 
 		for (int i = 0; i < droplet; i++) {
 			if ((signal[i] >= 2 && signal[i] <= 8) || (signal[i] == 12 || signal[i] == 13)) {
-				h_Nvector_index[nb] = i;						//We can find the Qtensor index of the Surface Vector point (nu_p or nu).
+				h_Nvector_index[nb] = i;				//We can find the Qtensor index of the Surface Vector point (nu_p or nu).
 				h_Nvector_signal[nb] = signal[i];		//Type of point.
 				nb++;
 			}
 		}
 
-		if (nb != surf) {
+		if (nb != surf + nsurf) {
 			printf("Error in transfer index and types for surface Qtensors!\n");
+			printf("Count is %d, surf is %d & nsurf is %d!\n", nb, surf, nsurf);
 			exit(1);
 		}
 
@@ -157,8 +153,6 @@ int main() {
 		unsigned int* h_Qtensor_index;
 		//unsigned char* h_Qtensor_signal;
 
-		unsigned int bulk = droplet - surf;
-
 		h_Qtensor_index = (unsigned int*)malloc(bulk * sizeof(unsigned int));
 		//h_Qtensor_signal = (unsigned char*)malloc(bulk * sizeof(unsigned char));
 
@@ -174,6 +168,7 @@ int main() {
 
 		if (nb != bulk) {
 			printf("Error in transfer index and types for bulk Qtensors!\n");
+			printf("Count is %d and bulk is %d!\n", nb, bulk);
 			exit(1);
 		}
 

@@ -14,26 +14,26 @@
 bool ellipsoid() {
 
 	double x = 0.0, y = 0.0, z = 0.0, dis = 0.0;
-	int l = 0, bulk = 0, innerbulk = 0, outerbulk = 0;
+	unsigned int l = 0, bulk = 0, innerbulk = 0, outerbulk = 0;
 	double dVi = 0.0, dVo = 0.0;
 	
 	dx = Lx / (double)(Nx - 1);
 	dy = Ly / (double)(Ny - 1);
 	dz = Lz / (double)(Nz - 1);
 
-	rx = lrint(Nx / 2) - 1;
-	ry = lrint(Ny / 2) - 1;
-	rz = lrint(Nz / 2) - 1;
-	
+	rx = lrint(Nx / 2);
+	ry = lrint(Ny / 2);
+	rz = lrint(Nz / 2);
+
 	double Rx = Lx / 2. - 2.;
 	double Ry = Ly / 2. - 2.;
 	double Rz = Lz / 2. - 2.;
 
 	surf = 0;
 	
-	idx = 1 / dx;
-	idy = 1 / dy;
-	idz = 1 / dz;
+	idx = 1. / dx;
+	idy = 1. / dy;
+	idz = 1. / dz;
 
 	iddx = idx * idx;
 	iddy = idy * idy;
@@ -164,9 +164,9 @@ bool ellipsoid() {
 	dVo = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)outerbulk;
 	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075)) / (double)surf;
 
-	printf("Internal nodes count = %d\nExternal nodes count = %d\n", innerbulk, outerbulk);
+	printf("Internal nodes count = %d\nExternal nodes count = %d\n", innerbulk, outerbulk + surf);
 	printf("External bulk count contains surface nodes!!\n");
-	printf("External count after substracting surface nodes is %d\n", outerbulk - surf);
+	printf("External count after substracting surface nodes is %d\n", outerbulk);
 	printf("dV = %lf\n", dV);
 	printf("dVi = %lf\n", dVi);
 	printf("dVo = %lf\n", dVo);
@@ -302,21 +302,21 @@ bool ellipsoid() {
 
 					if(DoubleU){
 						if (infinite == 1) {
-						Qold[nd * 6 + 0] = dir2ten(&nu[nb * 3], 0, S2);
-						Qold[nd * 6 + 1] = dir2ten(&nu[nb * 3], 1, S2);
-						Qold[nd * 6 + 2] = dir2ten(&nu[nb * 3], 2, S2);
-						Qold[nd * 6 + 3] = dir2ten(&nu[nb * 3], 3, S2);
-						Qold[nd * 6 + 4] = dir2ten(&nu[nb * 3], 4, S2);
-						Qold[nd * 6 + 5] = dir2ten(&nu[nb * 3], 5, S2);
-					}
-					else if (degenerate == 0 && infinite == 0) {
-						Qo[nb * 6 + 0] = dir2ten(&nu[nb * 3], 0, S2);
-						Qo[nb * 6 + 1] = dir2ten(&nu[nb * 3], 1, S2);
-						Qo[nb * 6 + 2] = dir2ten(&nu[nb * 3], 2, S2);
-						Qo[nb * 6 + 3] = dir2ten(&nu[nb * 3], 3, S2);
-						Qo[nb * 6 + 4] = dir2ten(&nu[nb * 3], 4, S2);
-						Qo[nb * 6 + 5] = dir2ten(&nu[nb * 3], 5, S2);
-					}
+							Qold[nd * 6 + 0] = dir2ten(&nu[nb * 3], 0, S2);
+							Qold[nd * 6 + 1] = dir2ten(&nu[nb * 3], 1, S2);
+							Qold[nd * 6 + 2] = dir2ten(&nu[nb * 3], 2, S2);
+							Qold[nd * 6 + 3] = dir2ten(&nu[nb * 3], 3, S2);
+							Qold[nd * 6 + 4] = dir2ten(&nu[nb * 3], 4, S2);
+							Qold[nd * 6 + 5] = dir2ten(&nu[nb * 3], 5, S2);
+						}
+						else if (degenerate == 0 && infinite == 0) {
+							Qo[nb * 6 + 0] = dir2ten(&nu[nb * 3], 0, S2);
+							Qo[nb * 6 + 1] = dir2ten(&nu[nb * 3], 1, S2);
+							Qo[nb * 6 + 2] = dir2ten(&nu[nb * 3], 2, S2);
+							Qo[nb * 6 + 3] = dir2ten(&nu[nb * 3], 3, S2);
+							Qo[nb * 6 + 4] = dir2ten(&nu[nb * 3], 4, S2);
+							Qo[nb * 6 + 5] = dir2ten(&nu[nb * 3], 5, S2);
+						}
 					}
 					else{
 						//infinite, define qtensor and don't evolve any more

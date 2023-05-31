@@ -1,35 +1,60 @@
+#pragma once
 #include<stdio.h>
+#include<stdlib.h>
 #include<math.h>
 #include<iostream>
 
-
 bool ellipsoid();
+bool nanochannel();
+
 extern double dir2ten(double* vec, int n, double S);
 extern bool norm_v(double *vec);
 extern bool conf();
+extern int peri(int node, int dir);
 
+/* Array que guarda los nodos que pertenecen al droplet. */
 bool* drop;
+/* Array que guarda los nodos pertenecientes a la superficie. */
 bool* boundary;
-int* qindex;
+/* Array que guarda los nodos pertenecientes a la nanopartícula. */
+bool* ndrop;
+/* Array que guarda los nodos pertenencientes a la superficie
+de la nanopartícula. */
+bool* nboundary;
+extern int rand_seed;
 double* Qo;
 double* nu;
+//Aquí se guarda el tensor Q.
 double* Qold;
 signed char* signal;
 int* neighbor;
-unsigned int droplet;
+unsigned int droplet, bulk;
+unsigned int surf, nsurf;
+//Guarda los tipos de nodo para ser transferidos al dispositivo.
 unsigned char* h_bulktype;
-double dV = 0.0;
+//Delta de Volumen.
+double dV, dVi, dVo;
+//Delta de Área
+double dA;
+//Radios o centros del sistema. No de la caja.
 double Rx, Ry, Rz;
+//Centros de la caja de simulación.
 int rx, ry, rz;
+int pRx, pRy, pRz;
+double pU;
+double alpha, beta, gama;
+int interface, anchoring;
+//Guarda los tipos de nodo de manera temporal antes de ser transferidos al vector del host.
 unsigned char* bulktype;
 
+//Deltas
 double dx, dy, dz;
+//Inverso de Delta
 double idx, idy, idz;
+//Delta cuadrada
 double iddx, iddy, iddz;
-
-unsigned int surf;
-double dA = 0.0;
-double dApart = 0.0;
+double dAdrop;
+double dApart;
 
 //Extern variables
 extern double Lx, Ly, Lz;
@@ -40,3 +65,4 @@ extern int degenerate, infinite;
 extern int seed;
 extern double S, S2;
 extern bool DoubleU;
+extern double dir1[3];

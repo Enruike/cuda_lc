@@ -1,6 +1,11 @@
-#include "definitions.cuh"
+#include "functions.hpp"
 
-//change director to Qtensor
+double matr_mult(double* vec){
+	double ans = 0;
+	ans = vec[0] * vec[0] +vec[1] * vec[1] +vec[2] * vec[2] + 2 * vec[0] * vec[1] + 2 * vec[0] * vec[2] + 2 * vec[1] * vec[2]; 
+	return ans;
+}
+
 double dir2ten(double* vec, int n, double S) {
 	double third = 1.0 / 3.0;
 	switch (n) {
@@ -77,6 +82,37 @@ bool checktr(double* Q){
 	return true;
 }
 
+int peri(int node, int dir){
+	if(dir == 0){
+		if(node >= 0 && node < Nx)	
+			return node;
+		else if(node >= Nx)
+			return node - Nx;
+		else
+			return node + Nx;
+	}
+	else if(dir == 1){
+		if(node >= 0 && node < Ny)	
+			return node;
+		else if(node >= Ny)
+			return node - Ny;
+		else 
+			return node + Ny;
+	}
+	else if(dir == 2){
+		if(node >= 0 && node < Nz)	
+			return node;
+		else if(node >= Nz)
+			return node - Nz;
+		else 
+			return node + Nz;
+	}
+	else{
+		printf("Wrong input for function periodic.\n");
+	}
+	return 0;
+}
+
 void output(){
 	FILE* energy;
 	FILE* Qtensor;
@@ -84,17 +120,22 @@ void output(){
 
 	//print energy
 	energy = fopen("energy.out", "a");
-	fprintf(energy,"%d\t%.9lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", cycle, dE, en_ldg, en_el[0], en_el[1], en_el[2], en_el[3], en_el[4], en_surf[0], en_surf[1], en_tot);
+	fprintf(energy,"%d\t%.9lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", cycle, dE, en_ldg[0], en_el[0], en_el[1], en_el[2], en_el[3], en_el[4], en_surf[0], en_surf[1], en_tot);
 	fclose(energy);
+
+	//Print Separated Energy.
+	if(DoubleU){
+		FILE* energy2;
+		energy2 = fopen("separated_energy.out", "a");
+		fprintf(energy2,"%d\t%.9lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\t%lf\n", cycle, dE, en_ldg[0], en_ldg[1], en_ldg[2], en_el[0], en_el_in[0], en_el_out[0], en_el[4], en_el_in[4], en_el_out[4], en_surf[0], en_tot);
+		fclose(energy2);
+	}
 
 	//print Qtensor
 	Qtensor = fopen("Qtensor.bin", "wb");
 	indx = 0;
-	for(int l = 0; l < Nx*Ny*Nz; l++){
-		if(drop[l] || boundary[l]){ // || nboundary[l]){
-			fwrite(&Qold[indx * 6], sizeof(double), 6, Qtensor);
-			indx ++;
-		}
+	for(int l = 0; l < droplet; l++){
+			fwrite(&Qold[l * 6], sizeof(double), 6, Qtensor);
 	}
 	fclose(Qtensor);
 }

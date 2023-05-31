@@ -7,7 +7,7 @@ __device__ double delta[6] = { 1., 0., 0., 1., 0., 1. };
 //__device__ __constant__ double d_idx, d_idy, d_idz, d_iddx, d_iddy, d_iddz;
 
 __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor, unsigned int* d_Qtensor_index, int chiral,
-	double U, double U2, double qch, int L1, unsigned int bulk, double idx, double idy, double idz, double iddx, double iddy, double iddz, double dt) 
+	double U, double U2, double qch, double L1, unsigned int bulk, double idx, double idy, double idz, double iddx, double iddy, double iddz, double dt) 
 	{
 	
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -118,7 +118,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 }
 
 __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int* d_Nvector_index, unsigned char* d_Nvector_signal, double* d_Qo, 
-	int chiral, double qch, int L1, unsigned int surf, int degenerate, int infinite, double W, double Wp, double* d_nu, double d_idx, double d_idy, double d_idz, double dt) {
+	int chiral, double qch, double L1, unsigned int surf, int degenerate, int infinite, double W, double Wp, double* d_nu, double d_idx, double d_idy, double d_idz, double dt) {
 
 	//__device__ double fabs(double x);
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;

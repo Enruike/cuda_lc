@@ -9,7 +9,11 @@ int Nx, Ny, Nz, Np;
 double Lx, Ly, Lz;
 double Wp, Rp;
 int save_every, check_every, stopat;
-double U, U2, W, qch, L1, L2, L3, L4;
+double W, qch, L1, L2, L3, L4;
+//Región 1 o interna.
+double U;
+//Región 2 o externa.
+double U2;
 int degenerate, infinite;
 int geo, seed, chiral;
 double tmin, tmax , increment, accuracy;

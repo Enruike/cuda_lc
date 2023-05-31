@@ -16,6 +16,7 @@ double dirvec1[3] = {0};
 double mod;
 double dir[3] = { 0. };
 double costhe, sinthe, cosphi, sinphi;
+double dir_temp[3] = { 0. };
 
 bool conf() {
 	if(seed == -1){
@@ -73,18 +74,20 @@ bool conf() {
 	}
 	else if (seed == 4 || seed == 5) {
 
-        cst = 2.0 * qch * redshift;
+        cst = 2. * qch * redshift;
+		srand(rand_seed);
+		double dir_temp[3] = { 0. };
 
         for (int k = 0; k < Nz; k++) {
             for (int j = 0; j < Ny; j++) {
                 for (int i = 0; i < Nx; i++) {
 
-                    if (drop[l] || boundary[l]) {
+                    if (drop[l] || boundary[l] || nboundary) {
                         if (seed == 4) {
 
-                            x = (i - rx) * cst * isq2;
-                            y = (j - ry) * cst * isq2;
-                            z = (k - rz) * cst * isq2;
+                            x = (double)(i - rx) * cst * isq2;
+                            y = (double)(j - ry) * cst * isq2;
+                            z = (double)(k - rz) * cst * isq2;
 
                             Qold[nd * 6 + 0] = A * (-sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
                             Qold[nd * 6 + 3] = A * (-sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
@@ -97,16 +100,44 @@ bool conf() {
 
                         else if (seed == 5) {
 
-                            x = i - rx;
-                            y = j - ry;
-                            z = k - rz;
+							x = (double)(i - rx) * dx;
+							y = (double)(j - ry) * dy;
+							z = (double)(k - rz) * dz;
+							
+                            if(interface != 0 && geo == 10){
 
-                            Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
-                            Qold[nd * 6 + 1] = A * sin(cst * z);
-                            Qold[nd * 6 + 2] = A * sin(cst * y);
-                            Qold[nd * 6 + 3] = A * (cos(cst * x) - cos(cst * z));
-                            Qold[nd * 6 + 4] = A * sin(cst * x);
-                            Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
+								if(bulktype[l] == 3){
+
+									dir_temp[0] = (rand() % (pRx + interface) + 1);
+						        	dir_temp[1] = (rand() % (pRy + interface) + 1);
+						        	dir_temp[2] = (rand() % (pRz + interface) + 1);
+                               		norm_v(dir_temp);
+
+									Qold[nd * 6 + 0] = dir2ten(dir_temp, 0, S2);
+									Qold[nd * 6 + 1] = dir2ten(dir_temp, 1, S2);
+									Qold[nd * 6 + 2] = dir2ten(dir_temp, 2, S2);
+									Qold[nd * 6 + 3] = dir2ten(dir_temp, 3, S2);
+									Qold[nd * 6 + 4] = dir2ten(dir_temp, 4, S2);
+									Qold[nd * 6 + 5] = dir2ten(dir_temp, 5, S2);
+								}
+								else{
+									Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
+									Qold[nd * 6 + 1] = A * sin(cst * z);
+									Qold[nd * 6 + 2] = A * sin(cst * y);
+									Qold[nd * 6 + 3] = A * (cos(cst * x) - cos(cst * z));
+									Qold[nd * 6 + 4] = A * sin(cst * x);
+									Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
+								}
+							}
+							else{
+								Qold[nd * 6 + 0] = A * (cos(cst * z) - cos(cst * y));
+								Qold[nd * 6 + 1] = A * sin(cst * z);
+								Qold[nd * 6 + 2] = A * sin(cst * y);
+								Qold[nd * 6 + 3] = A * (cos(cst * x) - cos(cst * z));
+								Qold[nd * 6 + 4] = A * sin(cst * x);
+								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
+								
+							}
                         }
                         nd++;
                     }

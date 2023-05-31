@@ -1,8 +1,8 @@
 #37 for K80 GPUs and 75 for Turing architecture GPUs
 ARCH = 75
-OBJS = configurations.o ellipsoid.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o
-OBJ = energy.o
-FILES = configurations.cu ellipsoid.cpp functions.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
+OBJS = configurations.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o geometry.o
+OBJ = energy.o geometry.o functions.o
+FILES = configurations.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
 HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp
 NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 
@@ -17,11 +17,17 @@ lc_cuda.x: $(FILES) $(HEADERS) $(OBJ)
 #ellipsoid.o: ellipsoid.cpp geometry.hpp
 #	nvcc -c ellipsoid.cpp
 
-energy.o: energy.cpp definitions.cuh
+energy.o: energy.cpp energy.hpp
 	nvcc -c energy.cpp
 
-# functions.o: functions.cu definitions.cuh
-# 	nvcc -c functions.cu
+#nanochannel.o: nanochannel.cpp geometry.hpp
+#	nvcc -c nanochannel.cpp
+
+geometry.o: geometry.cpp geometry.hpp
+	nvcc -c geometry.cpp
+
+functions.o: functions.cpp functions.hpp
+	nvcc -c functions.cpp
 
 # initial.o: initial.cpp initial.hpp
 # 	nvcc -c initial.cpp
