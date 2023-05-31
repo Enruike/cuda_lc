@@ -8,7 +8,7 @@ double dt = 0.0;
 double dtime = 0.0;
 int cycle = 0;
 bool flag;
-double S, S2;
+double S, S2, S0;
 
 __device__ double d_trqq(double Qin[6]){
         double ans = 0.;
@@ -202,11 +202,13 @@ int main() {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
 		}
-		//d_Q0 allocation
-		cudaStatus = cudaMalloc((void**)&d_Qo, sizeof(double) * surf * 6);
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMalloc failed!");
-			return 0;
+		if (infinite == 0 && degenerate == 0){
+			//d_Q0 allocation
+			cudaStatus = cudaMalloc((void**)&d_Qo, sizeof(double) * surf * 6);
+			if (cudaStatus != cudaSuccess) {
+				fprintf(stderr, "cudaMalloc failed!");
+				return 0;
+			}
 		}
 
 		//*************we now change de sizes of new signal vectors.********************//
@@ -251,20 +253,21 @@ int main() {
 		//We need h_bulktype to calculate energy in CPU. Don't free it.
 		cudaStatus = cudaMemcpy(d_bulktype, h_bulktype, droplet * sizeof(unsigned char), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed bulktyoe!");
 			return 0;
 		}
-
-		cudaStatus = cudaMemcpy(d_Qo, Qo, surf * 6 * sizeof(double), cudaMemcpyHostToDevice);
-		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
-			return 0;
+		if (infinite == 0 && degenerate == 0){
+			cudaStatus = cudaMemcpy(d_Qo, Qo, surf * 6 * sizeof(double), cudaMemcpyHostToDevice);
+			if (cudaStatus != cudaSuccess) {
+				fprintf(stderr, "cudaMemcpy failed Qo!");
+				return 0;
+			}
 		}
 
 		//Copy from host to device
 		cudaStatus = cudaMemcpy(d_Qold, Qold, droplet * 6 * sizeof(double), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed Qtensor!");
 			return 0;
 		}
 
@@ -272,19 +275,19 @@ int main() {
 		//New vectors signal
 		cudaStatus = cudaMemcpy(d_Nvector_signal, h_Nvector_signal, surf * sizeof(unsigned char), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed Nvector Sign!");
 			return 0;
 		}
 
 		//New vectors for index
 		cudaStatus = cudaMemcpy(d_Nvector_index, h_Nvector_index, surf * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed Nvector!");
 			return 0;
 		}
 		cudaStatus = cudaMemcpy(d_Qtensor_index, h_Qtensor_index, bulk * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed Qtensor index!");
 			return 0;
 		}
 
@@ -297,12 +300,12 @@ int main() {
 
 		cudaStatus = cudaMemcpy(d_neighbor, neighbor, droplet * 6 * sizeof(signed int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed for neighboors!");
 			return 0;
 		}
 		cudaStatus = cudaMemcpy(d_nu, nu, surf * 3 * sizeof(double), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
-			fprintf(stderr, "cudaMemcpy failed!");
+			fprintf(stderr, "cudaMemcpy failed surface vector!");
 			return 0;
 		}
 
@@ -334,6 +337,13 @@ int main() {
 		//Progress bar
 		const char *shade = "\u2592";
     	const char *shade2 = "\u2588";
+
+		if(DoubleU){
+			S0 = S2;
+		}
+		else{
+			S0 = S;
+		}
 		
 		if(stopat != 0){
 
@@ -409,8 +419,8 @@ int main() {
 					iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize();
 
-				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, surf, degenerate,
-					infinite, W, Wp, d_nu, idx, idy, idz, dt);
+				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, L2, L3, L4, surf, degenerate,
+					infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
 
 				cudaDeviceSynchronize();
 

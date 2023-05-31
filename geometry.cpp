@@ -631,6 +631,9 @@ bool ellipsoid() {
 	//Aquí guardo los índices de los nodos.
 	int* qindex = (int*)malloc(total_points * sizeof(int));
 	
+	bulk = 0;
+	droplet = 0;
+
 	dx = Lx / (double)(Nx - 1);
 	dy = Ly / (double)(Ny - 1);
 	dz = Lz / (double)(Nz - 1);
@@ -711,7 +714,7 @@ bool ellipsoid() {
 					z = (double)(k - rz) * dz;
 
 					if ( ((x * x) / ((Rx + 0.5) * (Rx + 0.5)) + (y * y) / ((Ry + 0.5) * (Ry + 0.5)) + (z * z) / ((Rz + 0.5) * (Rz + 0.5)) ) <= 1) {
-						
+						bulktype[l] = 1; //bulk interno.
 						drop[l] = true;
 						bulk++;
 
@@ -748,13 +751,15 @@ bool ellipsoid() {
 
 	bulk -= surf;
 	outerbulk -= surf;
-
-	if ((innerbulk + outerbulk) != bulk) {
-		printf("Problems with bulk nodes!\n");
-		return false;
-	}
-	else {
-		printf("Innerbulk and outerbulk nodes match with total bulk count!\n");
+	if(DoubleU){
+		if ((innerbulk + outerbulk) != bulk) {
+			printf("Problems with bulk nodes!\n");
+			return false;
+			exit(1);
+		}
+		else {
+			printf("Innerbulk and outerbulk nodes match with total bulk count!\n");
+		}
 	}
 	if ((bulk + surf) != droplet) {
 		printf("Problems with droplet nodes!\n");
@@ -773,16 +778,22 @@ bool ellipsoid() {
 
 	//for the moment, no nanoparticle section is needed. So, let's ignore it.
 	dV = ((4.0 / 3.0) * (double)M_PI * (Rx * Ry * Rz)) / (double)bulk;
-	dVi = ((4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)innerbulk;
-	dVo = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)outerbulk;
+	if(DoubleU){
+		dVi = ((4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)innerbulk;
+		dVo = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)outerbulk;
+	}
 	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075)) / (double)surf;
-
-	printf("Internal nodes count = %d\nExternal nodes count = %d\n", innerbulk, outerbulk + surf);
-	printf("External bulk count contains surface nodes!!\n");
-	printf("External count after substracting surface nodes is %d\n", outerbulk);
+	if(DoubleU){
+		printf("Internal nodes count = %d\nExternal nodes count = %d\n", innerbulk, outerbulk + surf);
+		printf("External bulk count contains surface nodes!!\n");
+		printf("External count after substracting surface nodes is %d\n", outerbulk);
+	}
 	printf("dV = %lf\n", dV);
-	printf("dVi = %lf\n", dVi);
-	printf("dVo = %lf\n", dVo);
+	if(DoubleU){
+		printf("dVi = %lf\n", dVi);
+		printf("dVo = %lf\n", dVo);
+	}
+	
 	printf("dA = %lf\n", dA);
 	
 
@@ -1033,6 +1044,7 @@ bool ellipsoid() {
 	if (nd != droplet) {
 		printf("Error in transfer data to droplet bulktype!\n");
 		return false;
+		exit(1);
 	}
 	
 	free(qindex);
