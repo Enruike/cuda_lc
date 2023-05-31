@@ -11,7 +11,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 	{
 	
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
-
+	if(indx == 100) printf("DevThir is %lf", devThird);
 	if (indx < bulk) {
 		//double third = 1.0 / 3.0;
 		double Qin[6];
@@ -124,6 +124,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
 	
 	if (indx < surf) {
+		if(indx == 100) printf("DevThir is in surf %lf", devThird);
 		bool degen;
 		bool inf;
 		double Wstr;
