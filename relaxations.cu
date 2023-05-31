@@ -329,7 +329,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			}
 			if(indx == 200){
 				for(int i = 0; i < 6; i++){
-					printf("Qold1 %lf ", d_Qold[d_Nvector_index[indx] * 6 + n]);
+					printf("Qold1 %lf ", d_Qold[d_Nvector_index[indx] * 6 + i]);
 				}
 				
 			}
