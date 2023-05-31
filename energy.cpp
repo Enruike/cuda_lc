@@ -320,7 +320,7 @@ void surface_energy(double ans[2]) {
 				if (degen == 1) {
 					for (int n = 0; n < 6; n++)	Qin[n] = Qold[i * 6 + n];
 					for (int n = 0; n < 3; n++)	loc_nu[n] = nu[nb * 3 + n];
-					h_en_degen(Qin, loc_nu, Qdiff);
+					en_degen(Qin, loc_nu, Qdiff);
 
 					if (npboundary) {
 						ans[1] += Wstr * trqq(Qdiff) * dApart;
@@ -347,7 +347,7 @@ void surface_energy(double ans[2]) {
 	}
 }
 
-void h_en_degen(double* Qin, double* loc_nu, double* Qdiff){
+void en_degen(double* Qin, double* loc_nu, double* Qdiff){
 	double Qtemp[3][3];
 	double ptemp[3][3];
 	double Qp[3][3];

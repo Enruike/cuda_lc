@@ -17,6 +17,10 @@ __device__ double d_trqq(double Qin[6]){
         return ans;
 }
 
+__global__ void test_funct(){
+	printf("is it working?");
+}
+
 __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -210,6 +214,13 @@ int main() {
 				return 0;
 			}
 		}
+		// else{
+		// 	cudaStatus = cudaMalloc((void**)&d_Qo, 1 * surf * 6);
+		// 	if (cudaStatus != cudaSuccess) {
+		// 		fprintf(stderr, "cudaMalloc failed!");
+		// 		return 0;
+		// 	}
+		// }
 
 		//*************we now change de sizes of new signal vectors.********************//
 
@@ -315,7 +326,7 @@ int main() {
 
 		unsigned int threads_per_block = 512;
 		//size for surface
-		unsigned int surfBlocks = rint(surf / threads_per_block) + 1;		
+		unsigned int surfBlocks = rint(surf / 512) + 1;		
 
 		//size for bulk
 		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
@@ -357,10 +368,12 @@ int main() {
 			printf("] 0.00%\n");
 		}
 
+		test_funct<<<1,5>>>();
+	
 		while (flag) {
 
 			printf("\t\t ~Computing Energy~ \n");
- 			free_energy();
+			free_energy();
 			
 			if(fabs(dE) < accuracy || (stopat != 0 && cycle == stopat)){
 				printf("Error in the trace of q; cycle : %d.\n", cycle);
@@ -373,23 +386,6 @@ int main() {
 			d_checktrace<<<dropletBlocks, threads_per_block>>>(d_Qold, droplet);
 			cudaDeviceSynchronize();
 			printf("\033[0m");
-			
-			//if((cycle % check_every) == 0){
-
-				
-				// for(int i = 0; i < droplet; i++){
-				// 	//				checktr(&q[i * 6]);
-				// 	if(!checktr(&Qold[i * 6])){
-				// 		//flag = false;
-				// 		printf("Trace corrected!\n");
-				// 		printf("%d\n", i);
-
-				// 	}
-				// }				
-				//if(!flag){
-				//	printf("Error in the trace of q; cycle : %d.\n", cycle);
-				//}
-			//}
 
 			if((cycle % save_every) == 0){
 				printf("\x1b[32m");
@@ -419,7 +415,7 @@ int main() {
 					iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize();
 
-				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, L2, L3, L4, surf, degenerate,
+				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, surf, degenerate,
 					infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
 
 				cudaDeviceSynchronize();
@@ -465,6 +461,8 @@ int main() {
 				break;
 			}
 		}
+	
+		
 
 		output();
 		
@@ -487,7 +485,10 @@ int main() {
 
 	//free device variables
 		cudaFree(d_Qold);
-		cudaFree(d_Qo);
+		if(infinite == 0 && degenerate == 0){
+			cudaFree(d_Qo);
+		}
+		
 		cudaFree(d_bulktype);
 		cudaFree(d_neighbor);
 		cudaFree(d_nu);
@@ -497,7 +498,9 @@ int main() {
 
 		//free host variables
 		free(signal);
-		free(Qo);
+		if(infinite == 0 && degenerate == 0){
+			free(Qo);
+		}
 		free(nu);
 		free(Qold);
 		free(neighbor);
