@@ -260,7 +260,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 					if(i == j) ptemp[i][j] = 1 - loc_nu[i] * loc_nu[j];
 					else ptemp[i][j] = - loc_nu[i] * loc_nu[j];
 				}
-			}
+			}/*
 			for(int i = 0; i < 3; i++){
 				for(int j = 0; j < 3; j++){
 					for(int l = 0; l < 3; l++){
@@ -274,7 +274,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 				for(int j = 0; j<3; j++){
 					nuQnu += loc_nu[i]*Qtemp[i][j]*loc_nu[j];
 				}
-			}
+			}*/
 			nuQnu *= devThird;
 			if(indx == 200) printf("nuQnu is %lf", nuQnu);
 			if(indx == 200) printf("Qp is %lf", Qp[0][0]);
