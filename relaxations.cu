@@ -321,13 +321,18 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			Qdiff[3] =  Qtemp[1][1]- Qp[1][1] - nuQnu;
 			Qdiff[4] =  Qtemp[1][2]- Qp[1][2];
 			Qdiff[5] =  Qtemp[2][2]- Qp[2][2] - nuQnu;
-			//if(indx == 200) printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qtemp[0][0], Qtemp[0][1], Qtemp[0][2], Qtemp[1][1], Qtemp[1][2], Qtemp[2][2]);
+			if(indx == 200) printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qtemp[0][0], Qtemp[0][1], Qtemp[0][2], Qtemp[1][1], Qtemp[1][2], Qtemp[2][2]);
 			//relax_degen(Qin, loc_nu, Qdiff, S);
 
 			for (int n = 0; n < 6; n++) {
 				d_Qold[d_Nvector_index[indx] * 6 + n] = Qin[n] + dt * (L1 * Qelas[n] + chiral * 2. * qch * Qch[n] - 2. * Wstr * Qdiff[n]);
 			}
-			
+			if(indx == 200){
+				for(int i = 0; i < 6; i++){
+					printf("Qold1 %lf ", d_Qold[d_Nvector_index[indx] * 6 + n]);
+				}
+				
+			}
 		}
 		else if(degen == 0 && inf == 0){
 
