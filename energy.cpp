@@ -2,6 +2,16 @@
 
 void free_energy() {
 
+	en_ldg[0] = 0.;
+	en_ldg[1] = 0.;
+	en_ldg[2] = 0.;
+	en_surf[0] = 0.;
+	en_surf[1] = 0.;
+	for(int i = 0; i < 5; i++){
+		en_el[i] = 0.;
+		en_el_in[i] = 0.;
+		en_el_out[i] = 0.;
+	}
 
 	ldg_energy(en_ldg);
 	elastic_energy(en_el, en_el_in, en_el_out);
@@ -83,10 +93,9 @@ void free_energy() {
 void ldg_energy(double ldg_ans[3]) {
 
 	double Qin[6] = { 0. };
-	ldg_ans[3] = { 0. };
 	double trace2 = 0.;
 	double trace3 = 0.;
-
+	ldg_ans[3] = {0.};
 	if(DoubleU){
 		for (int i = 0; i < droplet; i++) {
 			if (signal[i] == 0 || signal[i] == 1) {
@@ -121,6 +130,7 @@ void ldg_energy(double ldg_ans[3]) {
 		ldg_ans[2] *= dVo;
 	}
 	else{
+		
 		for (int i = 0; i < droplet; i++) {
 			if (signal[i] == 0 || signal[i] == 1) {
 
@@ -138,13 +148,11 @@ void ldg_energy(double ldg_ans[3]) {
 				trace2 = trqq(Qin);
 				trace3 = trqqq(Qin);
 			
-				ldg_ans[0] += 0.5 * (1. - U2 / 3.) * trace2 - U2 / 3. * trace3 + U2 * 0.25 * trace2 * trace2;
+				ldg_ans[0] += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 				
 			}
 		}
-
 		ldg_ans[0] *= dV;
-
 	}
 }
 
@@ -153,9 +161,6 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 	double dQ[3][6] = {{0.}};
 	double Qin[6] = { 0 };
 	double vec[3] = { 0. };
-	ans[5] = { 0. };
-	ans_in[5] = { 0. };
-	ans_out[5] = { 0. };
 
 	int xm, xp, ym, yp, zm, zp;
 
@@ -256,9 +261,11 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 		ans_out[1] *= 0.5 * dVo * L2;
 		ans_out[4] *= dVo * (double)chiral * 2. * L1 * qch;
 	}
+
 	ans[0] *= 0.5 * dV * L1;
 	ans[1] *= 0.5 * dV * L2;
 	ans[4] *= dV * (double)chiral * 2. * L1 * qch;
+
 }
 
 void surface_energy(double ans[2]) {

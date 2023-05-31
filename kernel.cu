@@ -86,9 +86,7 @@ int main() {
 
 	//continua con la funcion initial ubicada en initialization.cpp
 	else {
-
-
-		dE = 1.0;
+		old_en = 1.;
 		//S and U are the values for the inner LC. Also irx, iry and irz are the corresponding radii.
 		S = 0.25 * (1.0 + 3.0 * sqrt(1.0 - 8.0 / (3.0 * U)));
 		//S2 and U2 are the values for outer LC. Rx, Ry, Rz would be the radii of the whole droplet.
@@ -322,7 +320,7 @@ int main() {
 
 		unsigned int threads_per_block = 512;
 		//size for surface
-		unsigned int surfBlocks = rint(surf / 512) + 1;		
+		unsigned int surfBlocks = rint(surf / threads_per_block) + 1;		
 
 		//size for bulk
 		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;

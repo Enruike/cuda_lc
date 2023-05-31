@@ -339,7 +339,11 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			for (int n = 0; n < 6; n++) {
 				d_Qold[d_Nvector_index[indx] * 6 + n] = Qin[n] + dt * (L1 * Qelas[n] + chiral * 2 * qch * Qch[n] - Wstr * (Qin[n] - d_Qo[indx * 6 + n]));
 			}
-			
+			// if(indx == 200){
+			//  	for(int i = 0; i < 6; i++){
+			// 		printf("Qold1 %lf ", d_Qold[d_Nvector_index[indx] * 6 + i]);
+			// 	}
+			// }
 		}
 		
 	}
