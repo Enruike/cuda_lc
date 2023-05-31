@@ -303,27 +303,16 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			Qp[2][1] = ptemp[2][0] * Qtemp[0][0] * ptemp[0][1] + ptemp[2][0] * Qtemp[0][1] * ptemp[1][1] + ptemp[2][0] * Qtemp[0][2] * ptemp[2][1]\
 						+ ptemp[2][1] * Qtemp[1][0] * ptemp[0][1] + ptemp[2][1] * Qtemp[1][1] * ptemp[1][1] + ptemp[2][1] * Qtemp[1][2] * ptemp[2][1]\
 						+ ptemp[2][2] * Qtemp[2][0] * ptemp[0][1] + ptemp[2][2] * Qtemp[2][1] * ptemp[1][1] + ptemp[2][2] * Qtemp[2][2] * ptemp[2][1];
-						
+
 			Qp[2][2] = ptemp[2][0] * Qtemp[0][0] * ptemp[0][2] + ptemp[2][0] * Qtemp[0][1] * ptemp[1][2] + ptemp[2][0] * Qtemp[0][2] * ptemp[2][2]\
 						+ ptemp[2][1] * Qtemp[1][0] * ptemp[0][2] + ptemp[2][1] * Qtemp[1][1] * ptemp[1][2] + ptemp[2][1] * Qtemp[1][2] * ptemp[2][2]\
 						+ ptemp[2][2] * Qtemp[2][0] * ptemp[0][2] + ptemp[2][2] * Qtemp[2][1] * ptemp[1][2] + ptemp[2][2] * Qtemp[2][2] * ptemp[2][2];
 			
-			/*
-			for(int i = 0; i < 3; i++){
-				for(int j = 0; j < 3; j++){
-					for(int l = 0; l < 3; l++){
-						for(int m = 0; m < 3; m++){
-							Qp[i][j] += ptemp[i][l]*Qtemp[l][m]*ptemp[m][j];
-						}
-					}
-				}
-			}
-			for(int i = 0; i<3; i++) {
-				for(int j = 0; j<3; j++){
-					nuQnu += loc_nu[i]*Qtemp[i][j]*loc_nu[j];
-				}
-			}*/
-			nuQnu *= devThird;
+			
+			nuQnu = (loc_nu[0]*Qtemp[0][0]*loc_nu[0] + loc_nu[0]*Qtemp[0][1]*loc_nu[1] + loc_nu[0]*Qtemp[0][2]*loc_nu[2]\
+					+ loc_nu[1]*Qtemp[1][0]*loc_nu[0] + loc_nu[1]*Qtemp[1][1]*loc_nu[1] + loc_nu[1]*Qtemp[1][2]*loc_nu[2]\
+					+ loc_nu[2]*Qtemp[2][0]*loc_nu[0] + loc_nu[2]*Qtemp[2][1]*loc_nu[1] + loc_nu[2]*Qtemp[2][2]*loc_nu[2]) * devThird;
+
 			if(indx == 200) printf("nuQnu is %lf", nuQnu);
 			if(indx == 200) printf("Qp is %lf", Qp[0][0]);
 			Qdiff[0] =  Qtemp[0][0]- Qp[0][0] - nuQnu;
