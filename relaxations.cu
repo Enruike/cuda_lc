@@ -255,12 +255,25 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			Qtemp[1][2] = Qtemp[2][1] = Qin[4];
 			Qtemp[2][2] = Qin[5] + devThird * S;
 			
-			for(int i = 0; i < 3; i++){
-				for(int j = 0; j < 3; j++){
-					if(i == j) ptemp[i][j] = 1 - loc_nu[i] * loc_nu[j];
-					else ptemp[i][j] = - loc_nu[i] * loc_nu[j];
-				}
-			}/*
+			// for(int i = 0; i < 3; i++){
+			// 	for(int j = 0; j < 3; j++){
+			// 		if(i == j) ptemp[i][j] = 1 - loc_nu[i] * loc_nu[j];
+			// 		else ptemp[i][j] = - loc_nu[i] * loc_nu[j];
+			// 	}
+			// }
+			
+			ptemp[0][0] = 1. - loc_nu[0] * loc_nu[0];
+			ptemp[0][1] = - loc_nu[0] * loc_nu[1];
+			ptemp[0][2] = - loc_nu[0] * loc_nu[2];
+			ptemp[1][1] = 1. - loc_nu[1] * loc_nu[1];
+			ptemp[1][0] = - loc_nu[1] * loc_nu[0];
+			ptemp[1][2] = - loc_nu[1] * loc_nu[2];
+			ptemp[2][2] = 1. - loc_nu[2] * loc_nu[2];
+			ptemp[2][0] = - loc_nu[2] * loc_nu[0];
+			ptemp[2][1] = - loc_nu[2] * loc_nu[1];
+
+			
+			/*
 			for(int i = 0; i < 3; i++){
 				for(int j = 0; j < 3; j++){
 					for(int l = 0; l < 3; l++){
