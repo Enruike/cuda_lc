@@ -124,13 +124,12 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
 	
 	if (indx < surf) {
-		printf("Enter");
 		bool degen;
 		bool inf;
 		double Wstr;
 		double loc_nu[3] = { 0. };
 		double Qin[6] = { 0. };
-		//double Qdiff[6] = { 0. };
+		double Qdiff[6] = { 0. };
 		int xm, xp, ym, yp, zm, zp;
 		double dQ[3][6] = { { 0. } };
 		double Qelas[6] = { 0. };
@@ -289,8 +288,9 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			//relax_degen(Qin, loc_nu, Qdiff, S);
 
 			for (int n = 0; n < 6; n++) {
-				d_Qold[d_Nvector_index[indx] * 6 + n] = Qin[n] + dt * (L1 * Qelas[n] + chiral * 2. * qch * Qch[n] - 2. * Wstr); // * Qdiff[n]);
+				d_Qold[d_Nvector_index[indx] * 6 + n] = Qin[n] + dt * (L1 * Qelas[n] + chiral * 2. * qch * Qch[n] - 2. * Wstr * Qdiff[n]);
 			}
+			printf("Work");
 		}
 		else if(degen == 0 && inf == 0){
 

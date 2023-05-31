@@ -17,10 +17,6 @@ __device__ double d_trqq(double Qin[6]){
         return ans;
 }
 
-__global__ void test_funct(){
-	printf("is it working?");
-}
-
 __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -367,8 +363,6 @@ int main() {
 			
 			printf("] 0.00%\n");
 		}
-
-		test_funct<<<1,5>>>();
 	
 		while (flag) {
 
