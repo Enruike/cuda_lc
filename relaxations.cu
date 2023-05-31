@@ -238,7 +238,6 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			}
 
 		}
-		printf("enter");
 
 		__syncthreads();
 		
@@ -285,12 +284,12 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 			Qdiff[4] =  Qtemp[1][2]- Qp[1][2];
 			Qdiff[5] =  Qtemp[2][2]- Qp[2][2] - nuQnu;
 			printf("Q1 %lf Q2 %lf Q3 %lf Q4 %lf Q5 %lf Q6 %lf ", Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]); */
-			//relax_degen(Qin, loc_nu, Qdiff, S);
+			relax_degen(Qin, loc_nu, Qdiff, S);
 
 			for (int n = 0; n < 6; n++) {
 				d_Qold[d_Nvector_index[indx] * 6 + n] = Qin[n] + dt * (L1 * Qelas[n] + chiral * 2. * qch * Qch[n] - 2. * Wstr * Qdiff[n]);
 			}
-			printf("Work");
+			
 		}
 		else if(degen == 0 && inf == 0){
 
@@ -309,7 +308,7 @@ __device__ void relax_degen(double* Qin, double* loc_nu, double* Qdiff, double S
 	double Qp[3][3] = {{ 0. }};
 	double third = 1. / 3.;
 	double nuQnu = 0;
-	printf("enter");
+	printf("enter degen func");
 	Qtemp[0][0] = Qin[0] + third * S;
 	Qtemp[0][1] = Qtemp[1][0] = Qin[1];
 	Qtemp[0][2] = Qtemp[2][0] = Qin[2];
