@@ -10,3 +10,4 @@ extern int total_points;
 
 extern bool* drop;
 extern bool* boundary;
+extern bool* nboundary;

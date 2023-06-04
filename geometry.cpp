@@ -52,6 +52,8 @@ bool nanochannel(){
 
     double x = 0.0, y = 0.0, z = 0.0, dis = 0.0;
 	unsigned int l = 0;
+	double x_rot, y_rot, z_rot;
+    double distance;
 	
 	dx = Lx / (double)(Nx - 1);
 	dy = Ly / (double)(Ny - 1);
@@ -122,8 +124,6 @@ bool nanochannel(){
     'til now, there's no need of defining a position.
     */
 
-    double x_rot, y_rot, z_rot;
-    double distance;
     l = 0;
     int nanoparticle_nodes = 0;
 
@@ -271,14 +271,14 @@ bool nanochannel(){
     dV = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / bulk;
     dVi = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / (bulk - interbulk);
     dVo = (4 / 3 * M_PI * ((pRx + interface) * (pRy + interface) * (pRz + interface) - (pRx) * (pRy) * (pRz))) / interbulk;
-    dAdrop = (2 * Lx * Ly) / (surf);
+    dA = (2 * Lx * Ly) / (surf);
     dApart = 4. * M_PI * pow((pow(pRx * pRy, 1.6075) + pow(pRx * pRz, 1.6075) + pow(pRy * pRz, 1.6075)) / 3.0, 1.0/1.6075) / nsurf;
 
     int dAinterface;
 
     droplet = bulk + surf + nsurf;
 
-    printf("\ndV is %lf\ndA of droplet is %lf\ndA of nanoparticle is %lf\n", dV, dAdrop, dApart); 
+    printf("\ndV is %lf\ndA of droplet is %lf\ndA of nanoparticle is %lf\n", dV, dA, dApart); 
     printf("dVi = %lf\ndVo = %lf\n", dVi, dVo);
 	printf("\nDroplet nodes number is %d.\nBulk nodes number is %d.\nDroplet surface nodes number is %d.\nNanoparticle nodes is %d.\nParticle surface nodes number is %d.\n", droplet, bulk, surf, nanoparticle_nodes, nsurf);
     printf("Nanoparticle interface is %d\n\n", interbulk);
@@ -602,9 +602,6 @@ bool nanochannel(){
 	// 		nboundaryc++;
 	// 	} 
 	// }
-    for(int i = 0; i < droplet * 6; i++){
-		printf("Qold %d is %lf ", i, Qold[i]);
-	}
 	free(qindex);
 	free(bulktype);
     printf("Nanochannel initialized successfully!\n");

@@ -202,7 +202,7 @@ int main() {
 		}
 		if (infinite == 0 && degenerate == 0){
 			//d_Q0 allocation
-			cudaStatus = cudaMalloc((void**)&d_Qo, sizeof(double) * surf * 6);
+			cudaStatus = cudaMalloc((void**)&d_Qo, sizeof(double) * (surf + nsurf) * 6);
 			if (cudaStatus != cudaSuccess) {
 				fprintf(stderr, "cudaMalloc failed!");
 				return 0;
@@ -224,7 +224,7 @@ int main() {
 			return 0;
 		}*/
 
-		cudaStatus = cudaMalloc((void**)&d_Nvector_signal, sizeof(unsigned char) * surf);
+		cudaStatus = cudaMalloc((void**)&d_Nvector_signal, sizeof(unsigned char) * (surf + nsurf));
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
@@ -236,7 +236,7 @@ int main() {
 			return 0;
 		}
 
-		cudaStatus = cudaMalloc((void**)&d_Nvector_index, sizeof(unsigned int) * surf);
+		cudaStatus = cudaMalloc((void**)&d_Nvector_index, sizeof(unsigned int) * (surf + nsurf));
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
@@ -249,7 +249,7 @@ int main() {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
 		}
-		cudaStatus = cudaMalloc((void**)&d_nu, sizeof(double) * surf * 3);
+		cudaStatus = cudaMalloc((void**)&d_nu, sizeof(double) * (surf + nsurf) * 3);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
@@ -262,7 +262,7 @@ int main() {
 			return 0;
 		}
 		if (infinite == 0 && degenerate == 0){
-			cudaStatus = cudaMemcpy(d_Qo, Qo, surf * 6 * sizeof(double), cudaMemcpyHostToDevice);
+			cudaStatus = cudaMemcpy(d_Qo, Qo, (surf + nsurf) * 6 * sizeof(double), cudaMemcpyHostToDevice);
 			if (cudaStatus != cudaSuccess) {
 				fprintf(stderr, "cudaMemcpy failed Qo!");
 				return 0;
@@ -278,19 +278,19 @@ int main() {
 
 		////****************************///
 		//New vectors signal
-		cudaStatus = cudaMemcpy(d_Nvector_signal, h_Nvector_signal, surf * sizeof(unsigned char), cudaMemcpyHostToDevice);
+		cudaStatus = cudaMemcpy(d_Nvector_signal, h_Nvector_signal, (surf + nsurf) * sizeof(unsigned char), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMemcpy failed Nvector Sign!");
 			return 0;
 		}
 
 		//New vectors for index
-		cudaStatus = cudaMemcpy(d_Nvector_index, h_Nvector_index, surf * sizeof(unsigned int), cudaMemcpyHostToDevice);
+		cudaStatus = cudaMemcpy(d_Nvector_index, h_Nvector_index, (surf + nsurf) * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMemcpy failed Nvector!");
 			return 0;
 		}
-		cudaStatus = cudaMemcpy(d_Qtensor_index, h_Qtensor_index, bulk * sizeof(unsigned int), cudaMemcpyHostToDevice);
+		cudaStatus = cudaMemcpy(d_Qtensor_index, h_Qtensor_index, (surf + nsurf) * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMemcpy failed Qtensor index!");
 			return 0;
@@ -308,7 +308,7 @@ int main() {
 			fprintf(stderr, "cudaMemcpy failed for neighboors!");
 			return 0;
 		}
-		cudaStatus = cudaMemcpy(d_nu, nu, surf * 3 * sizeof(double), cudaMemcpyHostToDevice);
+		cudaStatus = cudaMemcpy(d_nu, nu, (surf + nsurf) * 3 * sizeof(double), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMemcpy failed surface vector!");
 			return 0;
@@ -320,7 +320,7 @@ int main() {
 
 		unsigned int threads_per_block = 512;
 		//size for surface
-		unsigned int surfBlocks = rint(surf / threads_per_block) + 1;		
+		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
 		//size for bulk
 		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
@@ -407,7 +407,7 @@ int main() {
 					iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize();
 
-				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, surf, degenerate,
+				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, (surf + nsurf), degenerate,
 					infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
 
 				cudaDeviceSynchronize();

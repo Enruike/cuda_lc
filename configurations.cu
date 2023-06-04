@@ -73,39 +73,85 @@ bool conf() {
 		fclose(grid);
 	}
 	else if (seed == 4 || seed == 5) {
+					
+		cst = 2. * qch * redshift;
+			
+		l = 0;
+		nd = 0;
 
-        cst = 2. * qch * redshift;
-		srand(rand_seed);
-		double dir_temp[3] = { 0. };
+		if(seed == 4){
+			for(int k = 0; k < Nz; k++){
+				for (int j = 0; j < Ny; j++){
+					for (int i = 0; i < Nx; i++){
+						
+						if(drop[l] || boundary[l] || nboundary[l]){
+							if(geo == -2){
+								x = (i - rx) * cst * isq2;
+								y = (j - 2) * cst * isq2;
+								z = (k) * cst * isq2;
+							}
+							else if(geo == -3){
+								x = (i - rx) * cst * isq2;
+								y = (j - 2) * cst * isq2;
+								z = (k - rz) * cst * isq2;
+							}
+							else{
+								x = (double)(i - rx) * cst * isq2;
+								y = (double)(j - ry) * cst * isq2;
+								z = (double)(k - rz) * cst * isq2;
+							}
+										
+							Qold[nd * 6 + 0] = A * (- sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
+							Qold[nd * 6 + 3] = A * (- sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
+							Qold[nd * 6 + 5] = A * (- sin(x) * cos(z) - sin(z) * cos(y) + 2 * sin(y) * cos(x));
+							Qold[nd * 6 + 1] = A * (- sq2 * sin(x) * sin(z) - sq2 * cos(y) * cos(z) + sin(x) * cos(y));
+							Qold[nd * 6 + 2] = A * (- sq2 * sin(z) * sin(y) - sq2 * cos(x) * cos(y) + sin(z) * cos(x));
+							Qold[nd * 6 + 4] = A * (- sq2 * sin(y) * sin(x) - sq2 * cos(z) * cos(x) + sin(y) * cos(z));
 
-        for (int k = 0; k < Nz; k++) {
-            for (int j = 0; j < Ny; j++) {
-                for (int i = 0; i < Nx; i++) {
+							nd ++;
+						}
+						l ++;
 
-                    if (drop[l] || boundary[l] || nboundary) {
-                        if (seed == 4) {
+					}
+				}
+			}
+		}
+		else{
 
-                            x = (double)(i - rx) * cst * isq2;
-                            y = (double)(j - ry) * cst * isq2;
-                            z = (double)(k - rz) * cst * isq2;
+			//time_t t;
+    		//srand((unsigned) time(&t));
+			srand(rand_seed);
+			double dir_temp[3] = { 0. };
 
-                            Qold[nd * 6 + 0] = A * (-sin(y) * cos(x) - sin(x) * cos(z) + 2 * sin(z) * cos(y));
-                            Qold[nd * 6 + 3] = A * (-sin(z) * cos(y) - sin(y) * cos(x) + 2 * sin(x) * cos(z));
-                            Qold[nd * 6 + 5] = A * (-sin(x) * cos(z) - sin(z) * cos(y) + 2 * sin(y) * cos(x));
-                            Qold[nd * 6 + 1] = A * (-sq2 * sin(x) * sin(z) - sq2 * cos(y) * cos(z) + sin(x) * cos(y));
-                            Qold[nd * 6 + 2] = A * (-sq2 * sin(z) * sin(y) - sq2 * cos(x) * cos(y) + sin(z) * cos(x));
-                            Qold[nd * 6 + 4] = A * (-sq2 * sin(y) * sin(x) - sq2 * cos(z) * cos(x) + sin(y) * cos(z));
-
-                        }
-
-                        else if (seed == 5) {
-
-							x = (double)(i - rx) * dx;
-							y = (double)(j - ry) * dy;
-							z = (double)(k - rz) * dz;
+			for(int k = 0; k < Nz; k++){
+				for (int j = 0; j < Ny; j++){
+					for (int i = 0; i < Nx; i++){
+						
+						if(drop[l] || boundary[l] || nboundary[l]){
 							
-                            if(interface != 0 && geo == 10){
+							if(geo == -2){
 
+								x = i - rx;
+								y = j - 2;
+								z = k;
+
+							}
+							else if(geo == -3){
+
+								x = i - rx;
+								y = j - 2;
+								z = k - rz;
+
+							}
+							else{
+
+								x = (double)(i - rx) * dx;
+								y = (double)(j - ry) * dy;
+								z = (double)(k - rz) * dz;
+
+							}
+
+							if(interface != 0 && geo == 10){
 								if(bulktype[l] == 3){
 
 									dir_temp[0] = (rand() % (pRx + interface) + 1);
@@ -138,15 +184,14 @@ bool conf() {
 								Qold[nd * 6 + 5] = A * (cos(cst * y) - cos(cst * x));
 								
 							}
-                        }
-                        nd++;
-                    }
-                    l++;
-                }
-            }
-        }
-
-    }
+							nd ++;
+						}
+						l ++;
+					}
+				}
+			}
+		}
+	}
 
     //seed=6; [110] BPI; 7: [110] BPII; 8: [111] BPI; 9: [111] BPII
 	else if(seed == 6 || seed == 7 || seed==8 || seed==9){

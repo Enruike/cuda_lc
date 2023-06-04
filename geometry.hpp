@@ -53,7 +53,6 @@ double dx, dy, dz;
 double idx, idy, idz;
 //Delta cuadrada
 double iddx, iddy, iddz;
-double dAdrop;
 double dApart;
 
 //Extern variables

@@ -38,7 +38,7 @@ bool initial() {
 	
 	for(int l = 0; l < total_points; l++){
 		//if(boundary[l] || nboundary[l])	signal = 1;
-		if(boundary[l])	signal = 1;
+		if(boundary[l] || nboundary[l])	signal = 1;
 		else if(drop[l]) 	signal = 0;			
 		else signal = -1;
 		fwrite(&signal, sizeof(int), 1, grid);
