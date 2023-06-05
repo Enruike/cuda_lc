@@ -290,7 +290,7 @@ int main() {
 			fprintf(stderr, "cudaMemcpy failed Nvector!");
 			return 0;
 		}
-		cudaStatus = cudaMemcpy(d_Qtensor_index, h_Qtensor_index, (surf + nsurf) * sizeof(unsigned int), cudaMemcpyHostToDevice);
+		cudaStatus = cudaMemcpy(d_Qtensor_index, h_Qtensor_index, bulk * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMemcpy failed Qtensor index!");
 			return 0;

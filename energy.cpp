@@ -95,7 +95,7 @@ void ldg_energy(double ldg_ans[3]) {
 	double Qin[6] = { 0. };
 	double trace2 = 0.;
 	double trace3 = 0.;
-
+	
 	if(DoubleU){
 		for (int i = 0; i < droplet; i++) {
 			if (signal[i] == 0 || signal[i] == 1) {

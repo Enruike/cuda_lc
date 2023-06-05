@@ -205,7 +205,7 @@ bool conf() {
         for(int k = 0; k < Nz; k++){
             for (int j = 0; j < Ny; j++){
                 for (int i = 0; i < Nx; i++){
-                    if(drop[l] || boundary[l]){// || nboundary[l]){
+                    if(drop[l] || boundary[l] || nboundary[l]){
                         if(seed == 6){
 
                             if(geo == -2){
