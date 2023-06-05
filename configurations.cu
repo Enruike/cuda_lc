@@ -56,7 +56,7 @@ bool conf() {
 				}
 			}
 			
-			if(drop[l] || boundary[l]){
+			if(drop[l] || boundary[l] || nboundary[l]){
 				for (int n = 0; n < 6; n++) {
 					Qold[nd * 6 + n] = a[n];
 				}

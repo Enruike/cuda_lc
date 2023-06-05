@@ -644,6 +644,7 @@ bool ellipsoid() {
 	Rz = Lz / 2. - 2.;
 
 	surf = 0;
+	nsurf = 0;
 	
 	idx = 1. / dx;
 	idy = 1. / dy;
@@ -659,10 +660,12 @@ bool ellipsoid() {
     bulktype = (unsigned char*)malloc(total_points * sizeof(unsigned char));
 	drop = (bool*)malloc(total_points * sizeof(bool));
 	boundary = (bool*)malloc(total_points * sizeof(bool));
+	nboundary = (bool*)malloc(total_points * sizeof(bool));
 
 	for (int i = 0; i < total_points; i++) {
 		drop[i] = false;
 		boundary[i] = false;
+		nboundary[i] = false;
 		bulktype[i] = 0;
 		qindex[i] = -1;
 	}
@@ -793,7 +796,6 @@ bool ellipsoid() {
 	
 	printf("dA = %lf\n", dA);
 	
-
 	//Allocating memory for surface vectors and tensors
 	nu = (double*)malloc(surf * 3 * sizeof(double));
 	for (int i = 0; i < surf; i++) {
