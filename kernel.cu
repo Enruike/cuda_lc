@@ -403,7 +403,7 @@ int main() {
 					printf(shade2);
 				}
 
-				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, bulk, idx, idy, idz,
+				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, L2, L3, L4, bulk, idx, idy, idz,
 					iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize();
 

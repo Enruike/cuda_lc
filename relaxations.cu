@@ -7,7 +7,7 @@ __device__ double delta[6] = { 1., 0., 0., 1., 0., 1. };
 //__device__ __constant__ double d_idx, d_idy, d_idz, d_iddx, d_iddy, d_iddz;
 
 __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor, unsigned int* d_Qtensor_index, int chiral,
-	double U, double U2, double qch, double L1, unsigned int bulk, double idx, double idy, double idz, double iddx, double iddy, double iddz, double dt) 
+	double U, double U2, double qch, double L1, double L2, double L3, double L4, unsigned int bulk, double idx, double idy, double idz, double iddx, double iddy, double iddz, double dt) 
 	{
 	
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -23,6 +23,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		double dQ[3][6] = { {0} };
 		double ddQ[6][6] = { {0} };
 		double Qelas[6] = { 0 };
+		double Qelas2[6] = { 0 };
 		double Qch[6] = { 0 };
 
 		// if(indx < 10){
@@ -90,6 +91,55 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 				dQ[1][n] = (d_Qold[yp * 6 + n] - d_Qold[ym * 6 + n]) * 0.5 * idy;
 				dQ[2][n] = (d_Qold[zp * 6 + n] - d_Qold[zm * 6 + n]) * 0.5 * idz;
 			}
+		}
+
+		if((L2 + L4) != 0 || L3 != 0){
+			if(sign[i] == 0){
+				//neighbor xpyp is the yp neighbor of xp: neighbor[xp * 6 + 3]; same definition for other points
+				for (int n = 0; n < 6; n ++) {
+					ddQ[1][n] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + n] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + n] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + n] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + n]) * idx * idy * 0.25;
+					ddQ[2][n] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + n] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + n] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + n] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + n]) * idx * idz * 0.25;
+					ddQ[4][n] = (d_Qold[d_neighbor[yp * 6 + 5]  * 6 + n] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + n] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + n] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + n]) * idy * idz * 0.25;
+				}
+			}
+			else{
+				for (int n = 0; n < 6; n ++) {
+					ddQ[1][n] = 0;
+					ddQ[2][n] = 0;
+					ddQ[4][n] = 0;
+				}
+			}
+		}
+		if((L2 + L4) != 0){
+			Qelas2[0] = ddQ[0][0] + ddQ[1][1] + ddQ[2][2];
+			Qelas2[1] = 0.5 * (ddQ[1][0] + ddQ[0][1] + ddQ[1][3] + ddQ[3][1] + ddQ[2][4] + ddQ[4][2]);
+			Qelas2[2] = 0.5 * (ddQ[2][0] + ddQ[0][2] + ddQ[1][4] + ddQ[4][1] + ddQ[2][5] + ddQ[5][2]);
+			Qelas2[3] = ddQ[1][1] + ddQ[3][3] + ddQ[4][4];
+			Qelas2[4] = 0.5 * (ddQ[1][2] + ddQ[2][1] + ddQ[5][4] + ddQ[4][5] + ddQ[3][4] + ddQ[4][3]);
+			Qelas2[5] = ddQ[2][2] + ddQ[4][4] + ddQ[5][5];
+			trace = (Qelas2[0] + Qelas2[3] + Qelas2[5]) * third;
+			Qelas2[0] -= trace;
+			Qelas2[3] -= trace;
+			Qelas2[5] -= trace;
+		}
+		if(L3 != 0){
+
+			Qelas3[0] = - 0.5 * trqq(dQ[0]);
+			Qelas3[1] = - 0.5 * (q_mult(dQ[0], dQ[1]));
+			Qelas3[2] = - 0.5 * (q_mult(dQ[0], dQ[2]));
+			Qelas3[3] = - 0.5 * trqq(dQ[1]);
+			Qelas3[4] = - 0.5 * (q_mult(dQ[1], dQ[2]));
+			Qelas3[5] = - 0.5 * trqq(dQ[2]);
+
+			for (int n = 0; n < 6; n++){
+				Qelas3[n] += Qin[0] * ddQ[0][n] + Qin[3] * ddQ[3][n] + Qin[5] * ddQ[5][n] + 2 * (Qin[1] * ddQ[1][n] + Qin[2] * ddQ[2][n] + Qin[4] * ddQ[4][n]);
+				Qelas3[n] += dQ[0][n] * (dQ[0][0] + dQ[1][1] + dQ[2][2]) + dQ[1][n] * (dQ[0][1] + dQ[1][3] + dQ[2][4]) + dQ[2][n] * (dQ[0][2] + dQ[1][4] + dQ[2][5]);
+			}		
+
+			trace = (Qelas3[0] + Qelas3[3] + Qelas3[5]) * third;
+			Qelas3[0] -= trace;
+			Qelas3[3] -= trace;
+			Qelas3[5] -= trace;
 		}
 
 		if (chiral == 1) {

@@ -114,7 +114,7 @@ extern void output();
 
 //Relaxation functions.
 __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor,
-	unsigned int* d_Qtensor_index, int chiral, double U, double U2, double qch, double L1, unsigned int bulk, double idx, double idy, double idz,
+	unsigned int* d_Qtensor_index, int chiral, double U, double U2, double qch, double L1, double L2, double L3, double L4, unsigned int bulk, double idx, double idy, double idz,
 	double iddx, double iddy, double iddz, double dt);
 
 __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int* d_Nvector_index, unsigned char* d_Nvector_signal, double* d_Qo,
