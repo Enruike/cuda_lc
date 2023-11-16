@@ -44,6 +44,7 @@ dVi = volumen interno o principal
 dVo  = volumen externo o secundario */
 extern double dV, dVi, dVo;
 extern double tiltAngle;
+extern double S;
 
 extern int geo;
 extern int DoubleU;
