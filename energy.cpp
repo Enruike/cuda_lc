@@ -413,12 +413,12 @@ void en_conic(double* Qin, double* loc_nu, double* Qdiff){
 	double cosTiltAngle;
 	double cosTiltAngleSq;
 	
-	Qtemp[0][0] = Qin[0] + third * S;
+	Qtemp[0][0] = Qin[0] + third * S0;
 	Qtemp[0][1] = Qtemp[1][0] = Qin[1];
 	Qtemp[0][2] = Qtemp[2][0] = Qin[2];
-	Qtemp[1][1] = Qin[3] + third * S;
+	Qtemp[1][1] = Qin[3] + third * S0;
 	Qtemp[1][2] = Qtemp[2][1] = Qin[4];
-	Qtemp[2][2] = Qin[5] + third * S;
+	Qtemp[2][2] = Qin[5] + third * S0;
 
 	for(int i = 0; i < 3; i++){
 		for(int j = 0; j < 3; j++){
@@ -440,10 +440,10 @@ void en_conic(double* Qin, double* loc_nu, double* Qdiff){
 	cosTiltAngle = cos(tiltAngle / 180.0 * M_PI);
 	cosTiltAngleSq = pow(cosTiltAngle, 2);
 	
-	Qdiff[0] =  Qp[0][0] - cosTiltAngleSq * S * ptemp[0][0];
-	Qdiff[1] =  Qp[0][1] - cosTiltAngleSq * S * ptemp[0][1];
-	Qdiff[2] =  Qp[0][2] - cosTiltAngleSq * S * ptemp[0][2];
-	Qdiff[3] =  Qp[1][1] - cosTiltAngleSq * S * ptemp[1][1];
-	Qdiff[4] =  Qp[1][2] - cosTiltAngleSq * S * ptemp[1][2];
-	Qdiff[5] =  Qp[2][2] - cosTiltAngleSq * S * ptemp[2][2];
+	Qdiff[0] =  Qp[0][0] - cosTiltAngleSq * S0 * ptemp[0][0];
+	Qdiff[1] =  Qp[0][1] - cosTiltAngleSq * S0 * ptemp[0][1];
+	Qdiff[2] =  Qp[0][2] - cosTiltAngleSq * S0 * ptemp[0][2];
+	Qdiff[3] =  Qp[1][1] - cosTiltAngleSq * S0 * ptemp[1][1];
+	Qdiff[4] =  Qp[1][2] - cosTiltAngleSq * S0 * ptemp[1][2];
+	Qdiff[5] =  Qp[2][2] - cosTiltAngleSq * S0 * ptemp[2][2];
 }
