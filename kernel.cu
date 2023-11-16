@@ -328,8 +328,7 @@ int main() {
 		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
 		//size for bulk
-		//unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
-		unsigned int bulkBlocks = rint(bulk / 512) + 1;
+		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
 
 		unsigned int dropletBlocks = rint(droplet / threads_per_block) + 1;
 

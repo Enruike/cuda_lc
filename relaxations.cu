@@ -44,7 +44,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		double Qch[6] = { 0 };
 
 		unsigned int Q_indx = d_Qtensor_index[indx];
-		unsigned int Q_signal = d_Qtensor_signal[Q_indx];
+		unsigned int Q_signal = d_Qtensor_signal[indx];
 
 		if(d_bulktype[Q_indx] == 3){
 			return;
@@ -169,32 +169,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			
 		}
 
-		ddQ[1][0] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 0] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 0] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 0] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 0]) * idx * idy * 0.25;
-		ddQ[2][0] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 0] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 0] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 0] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 0]) * idx * idz * 0.25;
-		ddQ[4][0] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 0] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 0] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 0] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 0]) * idy * idz * 0.25;
-
-		ddQ[1][1] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 1] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 1] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 1] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 1]) * idx * idy * 0.25;
-		ddQ[2][1] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 1] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 1] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 1] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 1]) * idx * idz * 0.25;
-		ddQ[4][1] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 1] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 1] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 1] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 1]) * idy * idz * 0.25;
-		
-		ddQ[1][2] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 2] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 2] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 2] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 2]) * idx * idy * 0.25;
-		ddQ[2][2] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 2] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 2] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 2] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 2]) * idx * idz * 0.25;
-		ddQ[4][2] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 2] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 2] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 2] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 2]) * idy * idz * 0.25;
-
-		ddQ[1][3] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 3] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 3] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 3] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 3]) * idx * idy * 0.25;
-		ddQ[2][3] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 3] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 3] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 3] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 3]) * idx * idz * 0.25;
-		ddQ[4][3] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 3] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 3] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 3] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 3]) * idy * idz * 0.25;
-
-		ddQ[1][4] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 4] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 4] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 4] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 4]) * idx * idy * 0.25;
-		ddQ[2][4] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 4] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 4] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 4] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 4]) * idx * idz * 0.25;
-		ddQ[4][4] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 4] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 4] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 4] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 4]) * idy * idz * 0.25;
-
-		ddQ[1][5] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 5] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 5] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 5] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 5]) * idx * idy * 0.25;
-		ddQ[2][5] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 5] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 5] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 5] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 5]) * idx * idz * 0.25;
-		ddQ[4][5] = (d_Qold[d_neighbor[yp * 6 + 5] * 6 + 5] + d_Qold[d_neighbor[ym * 6 + 4] * 6 + 5] - d_Qold[d_neighbor[ym * 6 + 5] * 6 + 5] - d_Qold[d_neighbor[yp * 6 + 4] * 6 + 5]) * idy * idz * 0.25;
-
-
-		/* if((L2 + L4) != 0 || L3 != 0){
+		if((L2 + L4) != 0 || L3 != 0){
 			if(Q_signal == 0){
 
 				//neighbor xpyp is the yp neighbor of xp: neighbor[xp * 6 + 3]; same definition for other points
@@ -250,8 +225,8 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 				ddQ[4][5] = 0;
 				
 			}
-		} */
-		/* if((L2 + L4) != 0){
+		}
+		if((L2 + L4) != 0){
 			Qelas2[0] = ddQ[0][0] + ddQ[1][1] + ddQ[2][2];
 			Qelas2[1] = 0.5 * (ddQ[1][0] + ddQ[0][1] + ddQ[1][3] + ddQ[3][1] + ddQ[2][4] + ddQ[4][2]);
 			Qelas2[2] = 0.5 * (ddQ[2][0] + ddQ[0][2] + ddQ[1][4] + ddQ[4][1] + ddQ[2][5] + ddQ[5][2]);
@@ -267,7 +242,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			Qelas2[3] -= trace_f(Qelas2);
 			Qelas2[5] -= trace_f(Qelas2);
 
-		} */
+		} 
 		/*if(L3 != 0){
 
 			Qelas3[0] = - 0.5 * trqq(dQ[0]);
@@ -335,7 +310,6 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		unsigned int nv_indx = d_Nvector_index[indx];
 
 		if(signal == 8){
-			printf("no evolve");
 			return;
 		}
 
@@ -344,8 +318,6 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		// }
 
 		//for geo boundary
-		printf("signal %d indx %d, ", signal, indx);
-		printf("degenerate %d ", degenerate);
 		
 		//for nanoparticle boundary
 		//4 is for NInf
@@ -682,9 +654,6 @@ __device__ void relax_degen(double Qin[6], double loc_nu[3], double Qdiff[6], do
 }
 
 __device__ void relax_conic(double Qin[6], double loc_nu[3], double Qdiff[6], double S, double tiltAngle){
-
-	
-	printf("enter function conic");
 	
 	double Qtemp[3][3] = {{ 0. }};
 	double ptemp[3][3] = {{ 0. }};
