@@ -1,4 +1,5 @@
 #include<stdio.h>
+#include<math.h>
 
 extern double* Qold;
 extern signed char* signal;
