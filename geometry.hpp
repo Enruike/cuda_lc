@@ -47,6 +47,14 @@ int interface, anchoring;
 //Guarda los tipos de nodo de manera temporal antes de ser transferidos al vector del host.
 unsigned char* bulktype;
 
+double x_rot, y_rot, z_rot;
+double distance;
+int nanoparticle_nodes;
+double pivotX, pivotY, pivotZ;
+int posX, posY, posZ;
+int pivotflag;
+int count1;
+
 //Deltas
 double dx, dy, dz;
 //Inverso de Delta

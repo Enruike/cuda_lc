@@ -17,11 +17,13 @@ double mod;
 double dir[3] = { 0. };
 double costhe, sinthe, cosphi, sinphi;
 double dir_temp[3] = { 0. };
+double Qini[6] = { 0. };
 
 bool conf() {
+
 	if(seed == -1){
 		
-		double Qini[6] = { 0. };
+		
 		for(int n = 0; n < 6; n ++){
         		Qini[n] = dir2ten(init_dir, n, 0.5);
         	}
@@ -71,6 +73,215 @@ bool conf() {
 		
 		fclose(qtensor);
 		fclose(grid);
+	}
+	else if(seed == 0){
+
+		printf("Uniform configuration.\n");
+		nd = 0;
+		double dirvec1[3] = {0};
+		double dirvec2[3] = {0};
+		double norm = 0;
+		srand(rand_seed);
+		double dir_temp[3] = { 0. };
+		l = 0;
+		
+		int tempcounter = 0;
+
+		if(geo == -2 || geo == -3){
+
+			for(int k = 0; k < Nz; k++){
+				for(int j = 0; j < Ny; j++){
+					for(int i = 0; i < Nx; i++){
+
+						if(drop[i + j * Nx + k * Nx * Ny]){						
+
+							for(int n = 0; n < 6; n++){
+									Qold[nd * 6 + n] = dir2ten(init_dir, n, S);
+							}						
+							nd++;
+							
+						}
+
+						else if(boundary[i + j * Nx + k * Nx * Ny]){
+							
+							if(j == 2){
+
+								for(int n = 0; n < 6; n++){
+									Qold[nd * 6 + n] = dir2ten(dir2, n, S);
+								}
+
+							}
+
+							else{
+
+								
+								if(uppersurf == 1){
+
+									if(geo == -2){
+										x = (i - rx) * dx;
+										y = (j - 2) * dy;
+										
+
+										norm = sqrt(x * x + y * y);
+
+										x = x/norm;
+										y = y/norm;
+
+										dirvec1[0] = -x;
+										dirvec1[1] = -y;
+										dirvec1[2] = 0;
+										
+										for(int n = 0; n < 6; n++){
+											Qold[nd * 6 + n] = dir2ten(dirvec1, n, S);
+										}										
+									}
+
+									else if(geo == -3){
+										x = (i - rx) * dx;
+										y = (j - 2) * dy;
+										z = (k - rz) * dz;
+
+										norm = sqrt(x * x + y * y + z * z);
+
+										x = x/norm;
+										y = y/norm;
+										z = z/norm;
+
+										dirvec1[0] = -x;
+										dirvec1[1] = -y;
+										dirvec1[2] = -z;
+										
+										for(int n = 0; n < 6; n++){
+											Qold[nd * 6 + n] = dir2ten(dirvec1, n, S);
+										}										
+									}
+									
+
+								}
+
+								else{
+									
+									for(int n = 0; n < 6; n++){
+										Qold[nd * 6 + n] = dir2ten(dir1, n, S);
+									}					
+
+								}							
+
+							}
+							nd++;
+						}
+					}
+				}
+			}
+		}
+		else if(geo == 10){
+			
+			if(!norm_v(init_dir)){
+				printf("Problems in initial direction before loop!\n");
+				exit(1);
+			}
+			for(int i = 0; i < 6; i++){
+				Qini[i] = dir2ten(init_dir, i, S);
+			}
+			dirvec1[0] = dirvec2[0] = init_dir[0];
+			dirvec1[1] = dirvec2[1] = init_dir[1];
+			dirvec1[2] = init_dir[2];
+			dirvec2[2] = - init_dir[2];
+			norm_v(dirvec1);
+			norm_v(dirvec2);
+
+			for(int k = 0; k < Nz; k++){
+				for(int j = 0; j < Ny; j++){
+					for(int i = 0; i < Nx; i++){
+						if(drop[l] || boundary[l] || nboundary[l]){
+							
+							if(bulktype[l] == 3){
+								
+								//Modified condition for negative direcctions.
+								dir_temp[0] = (rand() % (pRx + interface) - pRx - interface);
+								dir_temp[1] = (rand() % (pRy + interface) - pRy - interface);
+								dir_temp[2] = (rand() % (pRz + interface) - pRz - interface);
+								/* original condition for positive numbers 
+								
+								dir_temp[0] = (rand() % (pRx + interface) + 1);
+								dir_temp[1] = (rand() % (pRy + interface) + 1);
+								dir_temp[2] = (rand() % (pRz + interface) + 1);
+								
+								*/
+
+								/* if(tempcounter < 50) {
+									printf("Vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
+									
+								} */
+								
+								if(!norm_v(dir_temp)){
+									printf("Problems with random directions!\n");
+									printf("Problematic vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
+									exit(1);
+								}
+
+								
+							/* 	if(tempcounter < 50) {
+									printf("Norm vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
+									tempcounter++;
+								} */
+
+								Qold[nd * 6 + 0] = dir2ten(dir_temp, 0, S2);
+								Qold[nd * 6 + 1] = dir2ten(dir_temp, 1, S2);
+								Qold[nd * 6 + 2] = dir2ten(dir_temp, 2, S2);
+								Qold[nd * 6 + 3] = dir2ten(dir_temp, 3, S2);
+								Qold[nd * 6 + 4] = dir2ten(dir_temp, 4, S2);
+								Qold[nd * 6 + 5] = dir2ten(dir_temp, 5, S2);
+							}
+
+							else{
+
+								
+								if(k == 0){
+									for(int m = 0; m < 6; m++){
+										Qold[nd * 6 + m] = dir2ten(dirvec1, m, S);
+									}
+								}
+								else if(k == Nz - 1){
+									for(int m = 0; m < 6; m++){
+										Qold[nd * 6 + m] = dir2ten(dirvec2, m, S);
+									}
+								}
+								else{
+									for(int m = 0; m < 6; m++){
+										Qold[nd * 6 + m] = Qini[m];
+									}									
+								}
+	
+							}
+							nd++;
+						}
+						l++;
+					}
+				}
+			}
+		}
+
+		else{
+
+			if(!norm_v(init_dir)){			
+				printf("Problems in initial direction! \n");
+				return false;
+			}			
+
+			for(int n = 0; n < 6; n ++){
+				Qini[n] = dir2ten(init_dir, n, S);
+			}
+
+			for(int nd = 0; nd < droplet; nd ++){
+				if(drop[nd]){
+					for(int n = 0; n < 6; n ++){
+						Qold[nd * 6 + n] = Qini[n];
+					}
+				}
+			}
+		} 
+
 	}
 	else if (seed == 4 || seed == 5) {
 					

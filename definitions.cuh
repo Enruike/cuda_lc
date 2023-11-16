@@ -79,6 +79,7 @@ extern signed char* d_signal;
 extern double* d_nu;
 
 extern int cycle;
+extern double tiltAngle;
 
 //host variables
 extern unsigned char* h_bulktype;
@@ -114,12 +115,13 @@ extern void output();
 
 //Relaxation functions.
 __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor,
-	unsigned int* d_Qtensor_index, int chiral, double U, double U2, double qch, double L1, double L2, double L3, double L4, unsigned int bulk, double idx, double idy, double idz,
+	unsigned int* d_Qtensor_index, unsigned char* d_Qtensor_signal, int chiral, double U, double U2, double qch, double L1, double L2, double L3, double L4, unsigned int bulk, double idx, double idy, double idz,
 	double iddx, double iddy, double iddz, double dt);
 
 __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int* d_Nvector_index, unsigned char* d_Nvector_signal, double* d_Qo,
-	int chiral, double qch, double L1, unsigned int surf, int degenerate, int infinite, double W, double Wp, 
+	int chiral, double qch, double L1, double L2, double L3, double L4, double tiltAngle, unsigned int surf, int degenerate, int infinite, double W, double Wp, 
 	double* d_nu, double d_idx, double d_idy, double d_idz, double dt, double S);
 
-__device__ void relax_degen(double* Qin, double* loc_nu, double* Qdiff, double S);
+__device__ void relax_degen(double Qin[6], double loc_nu[3], double Qdiff[6], double S);
+__device__ void relax_conic(double Qin[6], double loc_nu[3], double Qdiff[6], double S, double tiltAngle);
 

@@ -1,0 +1,42 @@
+Nx 401
+Ny 401
+Nz 75
+Lx 400
+Ly 400
+Lz 74
+W 0.5
+U 3.0
+L1 0.769
+L2 1.537
+L3 0
+L4 0
+chiral 0
+qch 0.182650736
+redshift 0.86                   #Default values BPI = 0.71 & BPII = 0.86.
+geo 10
+degenerate 2                    #1:Degenerated & 2:Conic
+tiltAngle 36
+infinite 0
+Np 0
+Rp 25
+Wp 1.2
+seed 0
+rand_seed 100
+tmin tmax 0.01 0.1
+increment 10000
+accuracy 1e-4
+init_dir 0 0 1
+dir1 0 0 1
+dir2 0 0 1
+UpperSurface 1
+LowerSurface 1
+LowerSurfaceDegen 0
+DoubleU Mode 1
+U2 2.7
+iRx 120
+iRy 120
+iRz 120
+Save Every 100000
+Check Every 10000
+Stop At 0                  	#For non-stop condition use 0.
+Check Trace At 10000

@@ -59,7 +59,7 @@ int main() {
 	//device variable callings
 	double* d_Qold;
 	unsigned char* d_Nvector_signal;
-	//unsigned char* d_Qtensor_signal;
+	unsigned char* d_Qtensor_signal;
 	unsigned int* d_Nvector_index;
 	unsigned int* d_Qtensor_index;
 
@@ -96,7 +96,7 @@ int main() {
 		total_points = Nx * Ny * Nz;
 
 		printf("Value for S1 is: %lf\n", S);
-		printf("Value for S2 is: %lf\n\n", S2);
+		printf("Value for S2 is: %lf\n", S2);
 
 		if (!initial()) {
 			printf("Geometry couldn't be initialized!\n");
@@ -149,17 +149,17 @@ int main() {
 		}		
 
 		unsigned int* h_Qtensor_index;
-		//unsigned char* h_Qtensor_signal;
+		unsigned char* h_Qtensor_signal;
 
 		h_Qtensor_index = (unsigned int*)malloc(bulk * sizeof(unsigned int));
-		//h_Qtensor_signal = (unsigned char*)malloc(bulk * sizeof(unsigned char));
+		h_Qtensor_signal = (unsigned char*)malloc(bulk * sizeof(unsigned char));
 
 		nb = 0;
 
 		for (int i = 0; i < droplet; i++) {
 			if (signal[i] == 0 || signal[i] == 1) {
 				h_Qtensor_index[nb] = i;
-				//h_Qtensor_signal[nb] = signal[i];
+				h_Qtensor_signal[nb] = signal[i];
 				nb++;
 			}
 		}
@@ -177,10 +177,10 @@ int main() {
 					printf("Error in transfer from Qtensor to new Tensor Index Vector!\n");
 					exit(1);
 				}
-				/*if (h_Qtensor_signal[nb] != signal[i]) {
+				if (h_Qtensor_signal[nb] != signal[i]) {
 					printf("Error in transfer from Signal Vector to new Tensor Index Type Vector!\n");
 					exit(1);
-				}*/
+				}
 				nb++;
 			}
 		}
@@ -218,11 +218,11 @@ int main() {
 
 		//*************we now change de sizes of new signal vectors.********************//
 
-	/*	cudaStatus = cudaMalloc((unsigned char**)&d_Qtensor_signal, sizeof(unsigned char) * bulk);
+		cudaStatus = cudaMalloc((unsigned char**)&d_Qtensor_signal, sizeof(unsigned char) * bulk);
 		if (cudaStatus != cudaSuccess) {
 			fprintf(stderr, "cudaMalloc failed!");
 			return 0;
-		}*/
+		}
 
 		cudaStatus = cudaMalloc((void**)&d_Nvector_signal, sizeof(unsigned char) * (surf + nsurf));
 		if (cudaStatus != cudaSuccess) {
@@ -284,6 +284,12 @@ int main() {
 			return 0;
 		}
 
+		cudaStatus = cudaMemcpy(d_Qtensor_signal, h_Qtensor_signal, bulk * sizeof(unsigned char), cudaMemcpyHostToDevice);
+		if(cudaStatus != cudaSuccess){
+			fprintf(stderr, "cudaMemcpy failed Qtensor signal!");
+			return 0;
+		}
+
 		//New vectors for index
 		cudaStatus = cudaMemcpy(d_Nvector_index, h_Nvector_index, (surf + nsurf) * sizeof(unsigned int), cudaMemcpyHostToDevice);
 		if (cudaStatus != cudaSuccess) {
@@ -317,13 +323,13 @@ int main() {
 		/*printQ << <1, 10 >> > (d_Nvector_signal);
 		cudaDeviceSynchronize();*/
 
-
 		unsigned int threads_per_block = 512;
 		//size for surface
 		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
 		//size for bulk
-		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
+		//unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
+		unsigned int bulkBlocks = rint(bulk / 512) + 1;
 
 		unsigned int dropletBlocks = rint(droplet / threads_per_block) + 1;
 
@@ -343,7 +349,7 @@ int main() {
 		const char *shade = "\u2592";
     	const char *shade2 = "\u2588";
 
-		if(DoubleU){
+		if(DoubleU && geo == 4){
 			S0 = S2;
 		}
 		else{
@@ -403,12 +409,12 @@ int main() {
 					printf(shade2);
 				}
 
-				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, chiral, U, U2, qch, L1, L2, L3, L4, bulk, idx, idy, idz,
-					iddx, iddy, iddz, dt);
-				cudaDeviceSynchronize();
+				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal, chiral,
+					U, U2, qch, L1, L2, L3, L4, bulk, idx, idy, idz, iddx, iddy, iddz, dt);
+				cudaDeviceSynchronize(); 
 
-				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, (surf + nsurf), degenerate,
-					infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
+				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, L2, L3, L4,
+					tiltAngle, (surf + nsurf), degenerate, infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
 
 				cudaDeviceSynchronize();
 

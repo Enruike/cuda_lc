@@ -114,13 +114,15 @@ void ldg_energy(double ldg_ans[3]) {
 				trace2 = trqq(Qin);
 				trace3 = trqqq(Qin);
 
-				if (h_bulktype[i] == 1) {
+				if (h_bulktype[i] == 1){
 					ldg_ans[0] += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 					ldg_ans[1] += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 				}
-				else if (h_bulktype[i] == 2 || h_bulktype[i] == 3) {
+				else if (h_bulktype[i] == 2 || h_bulktype[i] == 3){
+
 					ldg_ans[0] += 0.5 * (1. - U2 / 3.) * trace2 - U2 / 3. * trace3 + U2 * 0.25 * trace2 * trace2;
 					ldg_ans[2] += 0.5 * (1. - U2 / 3.) * trace2 - U2 / 3. * trace3 + U2 * 0.25 * trace2 * trace2;
+					
 				}
 			}
 		}
@@ -128,6 +130,7 @@ void ldg_energy(double ldg_ans[3]) {
 		ldg_ans[0] *= dV;
 		ldg_ans[1] *= dVi;
 		ldg_ans[2] *= dVo;
+		
 	}
 	else{
 		

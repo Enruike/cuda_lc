@@ -1,3 +1,22 @@
+/* *******************************************************************
+#	Bulktype vector data:
+#	0: null
+#	1: U1
+#	2: U2
+#	3: U for nanoparticle interface. pU.
+#	4: Channel surface
+#	5: Nanoparticle nodes
+#	6: Nanoparticle surface
+
+#	Signal 
+#	0: Bulk
+#	1: Bulk with surface neighbors
+#	2: Surface nodes
+#	3: Surface nodes with undefined neighbors
+#	4: Nanoparticle surface nodes
+#	8: Not evolving surface nodes
+   ******************************************************************* */
+
 #include"geometry.hpp"
 
 bool read_nano(){
@@ -18,8 +37,20 @@ bool read_nano(){
     fscanf(param, "gamma %lf\n", &gama);
     fscanf(param, "interface %d #thickness of the interface layer; 0: no interface\n", &interface);
     fscanf(param, "anchoring %d #0:random 1:homeotropic 2:planar\n", &anchoring);
+    fscanf(param, "posX %d #0 for center; nanoparticle position\n", &posX);
+    fscanf(param, "posY %d\n", &posY);
+    fscanf(param, "posZ %d\n", &posZ);
+    fscanf(param, "pivot %d\n #0:center; 1:edge", &pivotflag);
 
-    printf("~ Nanoparticle data ~\n");
+    if(pivotflag == 0 && (posX != 0 || posY != 0 || posZ != 0)){
+        printf("Pivot flag it's set up for 0:center\n");
+        printf("Nanoparticle position will be set to center\n");
+        posX = 0;
+        posY = 0;
+        posZ = 0;
+    }
+
+    printf("\n~ Nanoparticle data ~\n");
     printf("pRx %d\n", pRx);
     printf("pRy %d\n", pRy);
     printf("pRz %d\n", pRz);
@@ -39,13 +70,24 @@ bool read_nano(){
         printf("unknonw anchoring\n");
         return false;
     }
-
+    if(pivotflag == 0){
+        printf("Nanoparticle position will be in the center of the box\n");
+    }
+    else{
+        printf("Nanoparticle position is: posX: %d; posY: %d; posZ: %d\n", posX, posY, posZ);
+    }
 
     return true;
 
 }
 
 bool nanochannel(){
+
+	//Leer valores del archivo nano.in
+    if(!read_nano()){
+        return false;
+		exit(1);
+    }
 
 	//Aquí guardo los índices de los nodos.
 	int* qindex = (int*)malloc(total_points * sizeof(int));
@@ -59,9 +101,25 @@ bool nanochannel(){
 	dy = Ly / (double)(Ny - 1);
 	dz = Lz / (double)(Nz - 1);
 
-	rx = lrint(Nx / 2);
-	ry = lrint(Ny / 2);
-	rz = lrint(Nz / 2);
+	 //Mitad de la caja
+    if(posX == 0){
+        rx = lrint(Nx / 2);
+    }
+    else{
+        rx = posX;
+    }
+    if(posY == 0){
+        ry = lrint(Ny / 2);
+    }
+    else{
+        ry = posY;
+    }
+    if(posZ == 0){
+        rz = lrint(Nz / 2);
+    }
+    else{
+        rz = posZ;
+    }
 	
 	Rx = Lx / 2. - 2.;
 	Ry = Ly / 2. - 2.;
@@ -70,9 +128,9 @@ bool nanochannel(){
 	surf = 0;
     bulk = Nx * Ny * Nz;
 	
-	idx = 1 / dx;
-	idy = 1 / dy;
-	idz = 1 / dz;
+	idx = 1. / dx;
+	idy = 1. / dy;
+	idz = 1. / dz;
 
 	iddx = idx * idx;
 	iddy = idy * idy;
@@ -110,22 +168,17 @@ bool nanochannel(){
         }
     }
 
-    //Leer valores del archivo nano.in
-    if(!read_nano()){
-        return false;
-    }
-
     alpha = (alpha * M_PI) / 180.;
     beta = (beta * M_PI) / 180.;
     gama = (gama * M_PI) / 180.;
 
-    /*
-    Nano particle is in the center of the channel.
-    'til now, there's no need of defining a position.
-    */
+	/* Pivot for one end point */
+   	pivotX = 0.;
+    pivotY = 0.;
+    pivotZ = sin(beta) * pRx;
 
     l = 0;
-    int nanoparticle_nodes = 0;
+    nanoparticle_nodes = 0;
 
     for(int k = 0; k < Nz; k++){
         for(int j = 0; j < Ny; j++){
@@ -135,11 +188,21 @@ bool nanochannel(){
 				y = (double)(j - ry) * dy;
 				z = (double)(k - rz) * dz;
 
-                x_rot = x * cos(alpha) * cos(beta) + y * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
-					+ z * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
-				y_rot = x * sin(alpha) * cos(beta) + y * (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
-					+ z * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
-				z_rot = x * -sin(beta) + y * cos(beta) * sin(gama) + z * cos(beta) * cos(gama);
+                //pivotflag 0 for center
+                if(pivotflag == 0){
+                    x_rot = x * cos(alpha) * cos(beta) + y * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
+					    + z * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
+				    y_rot = x * sin(alpha) * cos(beta) + y * (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
+					    + z * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
+				    z_rot = x * -sin(beta) + y * cos(beta) * sin(gama) + z * cos(beta) * cos(gama);
+                }
+                else{
+                    x_rot = (x - pivotX) * cos(alpha) * cos(beta) + (y - pivotY) * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
+					    + (z - pivotZ) * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
+				    y_rot = (x - pivotX) * sin(alpha) * cos(beta) + (y - pivotY)* (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
+					    + (z - pivotZ) * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
+				    z_rot = (x - pivotX) * -sin(beta) + (y - pivotY) * cos(beta) * sin(gama) + (z - pivotZ) * cos(beta) * cos(gama);
+                }
 
 				x = x_rot;
 				y = y_rot;
@@ -270,7 +333,8 @@ bool nanochannel(){
 
     dV = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / bulk;
     dVi = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / (bulk - interbulk);
-    dVo = (4 / 3 * M_PI * ((pRx + interface) * (pRy + interface) * (pRz + interface) - (pRx) * (pRy) * (pRz))) / interbulk;
+    if(interface != 0) dVo = (4. / 3. * M_PI * ((double)(pRx + interface) * (double)(pRy + interface) * (double)(pRz + interface) - (double)(pRx) * (double)(pRy) * (double)(pRz))) / (double)interbulk;
+    else dVo = 0.;
     dA = (2 * Lx * Ly) / (surf);
     dApart = 4. * M_PI * pow((pow(pRx * pRy, 1.6075) + pow(pRx * pRz, 1.6075) + pow(pRy * pRz, 1.6075)) / 3.0, 1.0/1.6075) / nsurf;
 
@@ -319,6 +383,7 @@ bool nanochannel(){
 
     int nb = 0;
 	int nd = 0;
+	int nbulk = 0;
 
 	for (int l = 0; l < total_points; l++) {
 
@@ -328,7 +393,7 @@ bool nanochannel(){
             //superficie del canal: share/sign = 2
             //superficie de la nanopartícula: share/sign = 4
             if(drop[l]){       
-                signal[nd] = 0;      
+                signal[nd] = 0;    
             }
             else if(boundary[l]){
                 signal[nd] = 2;
@@ -342,15 +407,41 @@ bool nanochannel(){
         }
 	}
 
-    int nondrop = 0;
+    int countshare0 = 0;
+    int countshare2 = 0;
+    int countshare4 = 0;
+    int countshare8 = 0;
+    int shareminusone = 0;
+    int undefined = 0;
+    count1 = 0;
 
-    for(int i = 0; i < total_points; i++){
-        if(qindex[i] == -1){
-            nondrop++;
+    for(int i = 0; i < droplet; i++){
+        if(signal[i] == 0){
+            countshare0++;
+            count1++;
+        }
+        else if(signal[i] == 2){
+            countshare2++;
+            count1++;
+        }
+        else if(signal[i] == 4){
+            countshare4++;
+            count1++;
+        }
+        else if(signal[i] == 8){
+            countshare8++;
+            count1++;
+        }
+        else if(signal[i] == -1){
+            shareminusone++;
+        }
+        else{
+            undefined++;
+            
         }
     }
-
-    //printf("-1 qindex nodes is %d and nanoparticle nodes is %d\n", nondrop, nanoparticle_nodes);
+    printf("Pre share count 0 : %d, 2 : %d, 4 : %d, 8 : %d, total : %d\n", countshare0, countshare2, countshare4, countshare8, count1);
+    printf("-1 : %d, undefined : %d\n", shareminusone, undefined);
 
     if (nd != droplet){
 		printf("Problem in initialization of qtensor. nd is %d not equal to droplet %d.\n", nd, droplet);
@@ -375,7 +466,7 @@ bool nanochannel(){
     l = 0;
 	nb = 0;
 	nd = 0;
-    nondrop = 0;
+    int nondrop = 0;
     // time_t t;
     // srand((unsigned) time(&t));
 	srand(rand_seed);
@@ -414,7 +505,10 @@ bool nanochannel(){
                         else{
                             printf("Error in channel surface.\n");
                             return false;
+							exit(1);
                         }
+
+						norm_v(&nu[nb * 3]);
                         
                         if(infinite == 1){
                             for(int n = 0; n < 6; n ++){
@@ -432,11 +526,20 @@ bool nanochannel(){
                         y = (double)(j - ry) * dy;
                         z = (double)(k - rz) * dz;
 
-                        x_rot = x * cos(alpha) * cos(beta) + y * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
-                            + z * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
-                        y_rot = x * sin(alpha) * cos(beta) + y * (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
-                            + z * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
-                        z_rot = x * -sin(beta) + y * cos(beta) * sin(gama) + z * cos(beta) * cos(gama);
+                        if(pivotflag == 0){
+                            x_rot = x * cos(alpha) * cos(beta) + y * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
+                                + z * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
+                            y_rot = x * sin(alpha) * cos(beta) + y * (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
+                                + z * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
+                            z_rot = x * -sin(beta) + y * cos(beta) * sin(gama) + z * cos(beta) * cos(gama);
+                        }
+                        else{
+                            x_rot = (x - pivotX) * cos(alpha) * cos(beta) + (y - pivotY) * (cos(alpha) * sin(beta) * sin(gama) - sin(alpha) * cos(gama))\
+                                + (z - pivotZ) * (cos(alpha) * sin(beta) * cos(gama) + sin(alpha) * sin(gama));
+                            y_rot = (x - pivotX) * sin(alpha) * cos(beta) + (y - pivotY)* (sin(alpha) * sin(beta) *sin(gama) + cos(alpha) * cos(gama))\
+                                + (z - pivotZ) * (sin(alpha) * sin(beta) * cos(gama) - cos(alpha) * sin(gama));
+                            z_rot = (x - pivotX) * -sin(beta) + (y - pivotY) * cos(beta) * sin(gama) + (z - pivotZ) * cos(beta) * cos(gama);
+                        }
 
                         x = x_rot;
                         y = y_rot;
@@ -449,13 +552,14 @@ bool nanochannel(){
                         if (distance == 0){
                             printf("Error in neighbors on particle boundary.\n");
                             return false;
+							exit(1);
                         }
                         else {
 
                             if(anchoring == 0){
-                                nu[nb * 3 + 0] = (rand() % pRx + 1);
-						        nu[nb * 3 + 1] = (rand() % pRy + 1);
-						        nu[nb * 3 + 2] = (rand() % pRz + 1);
+                                nu[nb * 3 + 0] = (rand() % pRx - pRx);
+						        nu[nb * 3 + 1] = (rand() % pRy - pRy);
+						        nu[nb * 3 + 2] = (rand() % pRz - pRz);
                                 norm_v(&nu[nb * 3]);
 
                             }
@@ -520,7 +624,41 @@ bool nanochannel(){
 		return false;
 	}
 
-	int count1;
+	countshare0 = 0;
+    countshare2 = 0;
+    countshare4 = 0;
+    countshare8 = 0;
+    shareminusone = 0;
+    undefined = 0;
+    count1 = 0;
+    for(int i = 0; i < droplet; i++){
+        if(signal[i] == 0){
+            countshare0++;
+            count1++;
+        }
+        else if(signal[i] == 2){
+            countshare2++;
+            count1++;
+        }
+        else if(signal[i] == 4){
+            countshare4++;
+            count1++;
+        }
+        else if(signal[i] == 8){
+            countshare8++;
+            count1++;
+        }
+        else if(signal[i] == -1){
+            shareminusone++;
+        }
+        else{
+            undefined++;
+        }
+    }
+
+    printf("After count 0 : %d, 2 : %d, 4 : %d, 8 : %d, total : %d\n", countshare0, countshare2, countshare4, countshare8, count1);
+    printf("-1 : %d, undefined : %d\n", shareminusone, undefined);
+
 	for (int nd = 0; nd < droplet; nd++) {
 		//for all Bulk point, if one of the neighbor is surface point
 		count1 = 0;
@@ -996,7 +1134,6 @@ bool ellipsoid() {
 		return false;
 	}
 
-	int count1;
 	for (int nd = 0; nd < droplet; nd++) {
 		//for all Bulk point, if one of the neighbor is surface point
 		count1 = 0;
@@ -1035,6 +1172,18 @@ bool ellipsoid() {
 		}
 		else if (bulktype[i] == 2) {
 			h_bulktype[nd] = 2;
+			nd++;
+		}
+		else if (bulktype[i] == 3) {
+			h_bulktype[nd] = 3;
+			nd++;
+		}
+		else if (bulktype[i] == 4) {
+			h_bulktype[nd] = 4;
+			nd++;
+		}
+		else if (bulktype[i] == 6) {
+			h_bulktype[nd] = 6;
 			nd++;
 		}
 	}

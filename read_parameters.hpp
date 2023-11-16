@@ -17,6 +17,8 @@ double U2;
 int degenerate, infinite;
 int geo, seed, chiral;
 double tmin, tmax , increment, accuracy;
+double tiltAngle;
+int trace_checker;
 double redshift;
 double init_dir[3];
 double dir1[3], dir2[3];

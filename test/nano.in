@@ -1,0 +1,13 @@
+pRx 60                          #size of nanoparticle
+pRy 60
+pRz 3
+pU 2.755                        #U for the interface layer
+alpha 0                         #Angles for rotate or tilt the nano particle
+beta 20
+gamma 0
+interface 3                     #thickness of the interface layer; 0: no interface
+anchoring 0                     #0:random 1:homeotropic 2:planar
+posX 0                          #0 for center; nanoparticle position
+posY 0
+posZ 10
+pivot 1                         #0:center; 1:edge
