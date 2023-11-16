@@ -7,6 +7,8 @@ void ldg_energy(double ans[3]);
 void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]);
 void surface_energy(double ans[2]);
 void en_degen(double* Qin, double* loc_nu, double* Qdiff);
+void en_conic(double* Qin, double* loc_nu, double* Qdiff);
+
 //Definiendo variables
 double dE;
 double en_tot, old_en;
@@ -41,6 +43,7 @@ dV = volumen total
 dVi = volumen interno o principal
 dVo  = volumen externo o secundario */
 extern double dV, dVi, dVo;
+extern double tiltAngle;
 
 extern int geo;
 extern int DoubleU;

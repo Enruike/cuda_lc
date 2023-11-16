@@ -340,6 +340,18 @@ void surface_energy(double ans[2]) {
 					}
 
 				}
+				else if(degen == 2){
+					for (int n = 0; n < 6; n++)	Qin[n] = Qold[i * 6 + n];
+					for (int n = 0; n < 3; n++)	loc_nu[n] = nu[nb * 3 + n];
+					en_conic(Qin, loc_nu, Qdiff);
+
+					if (npboundary) {
+						ans[1] += Wstr * trqq(Qdiff) * dApart;
+					}
+					else {
+						ans[0] += Wstr * trqq(Qdiff) * dA;
+					}
+				}
 				else if (degen == 0 && inf == 0) {
 					for (int n = 0; n < 6; n++) {
 						Qdiff[n] = Qold[i * 6 + n] - Qo[nb * 6 + n];
@@ -393,3 +405,45 @@ void en_degen(double* Qin, double* loc_nu, double* Qdiff){
 }
 
 
+void en_conic(double* Qin, double* loc_nu, double* Qdiff){
+	double Qtemp[3][3];
+	double ptemp[3][3];
+	double Qp[3][3];
+	double third = 1. / 3.;
+	double cosTiltAngle;
+	double cosTiltAngleSq;
+	
+	Qtemp[0][0] = Qin[0] + third * S;
+	Qtemp[0][1] = Qtemp[1][0] = Qin[1];
+	Qtemp[0][2] = Qtemp[2][0] = Qin[2];
+	Qtemp[1][1] = Qin[3] + third * S;
+	Qtemp[1][2] = Qtemp[2][1] = Qin[4];
+	Qtemp[2][2] = Qin[5] + third * S;
+
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			ptemp[i][j] = loc_nu[i] * loc_nu[j];
+		}
+	}
+
+	for(int i = 0; i < 3; i++){
+		for(int j = 0; j < 3; j++){
+			Qp[i][j] = 0;
+			for(int l = 0; l < 3; l++){
+				for(int m = 0; m < 3; m++){
+					Qp[i][j] += ptemp[i][l] * Qtemp[l][m] * ptemp[m][j];
+				}
+			}
+		}
+	}
+	
+	cosTiltAngle = cos(tiltAngle / 180.0 * M_PI);
+	cosTiltAngleSq = pow(cosTiltAngle, 2);
+	
+	Qdiff[0] =  Qp[0][0] - cosTiltAngleSq * S * ptemp[0][0];
+	Qdiff[1] =  Qp[0][1] - cosTiltAngleSq * S * ptemp[0][1];
+	Qdiff[2] =  Qp[0][2] - cosTiltAngleSq * S * ptemp[0][2];
+	Qdiff[3] =  Qp[1][1] - cosTiltAngleSq * S * ptemp[1][1];
+	Qdiff[4] =  Qp[1][2] - cosTiltAngleSq * S * ptemp[1][2];
+	Qdiff[5] =  Qp[2][2] - cosTiltAngleSq * S * ptemp[2][2];
+}
