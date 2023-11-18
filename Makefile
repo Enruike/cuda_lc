@@ -3,7 +3,7 @@ ARCH = 75
 OBJS = configurations.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o geometry.o
 OBJ = energy.o geometry.o functions.o
 FILES = configurations.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
-HEADERS = definitions.cuh geometry.hpp initial.hpp read_parameters.hpp
+HEADERS = definitions.cuh relaxations.cuh geometry.hpp initial.hpp read_parameters.hpp
 NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 
 all: lc_cuda.x

@@ -72,7 +72,7 @@ bool read_param() {
 		printf("redshift %lf\n", redshift);
 		printf("geo %d\n", geo);
 		printf("degenerate %d\n", degenerate);
-		printf("tilt angle = %.2lf\n", tiltAngle);
+		printf("tilt angle %.2lf°\n", tiltAngle);
 		printf("infinite %d\n", infinite);
 		printf("Np %d\n", Np);
 		printf("Rp %lf\n", Rp);

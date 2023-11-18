@@ -1,4 +1,4 @@
-#include "definitions.cuh"
+#include "relaxations.cuh"
 
 //cuda variables. 
 __device__ double fabs(double x);
@@ -7,6 +7,7 @@ __device__ double pow(double x, double y);
 __device__ __constant__ double devThird = 1. / 3.;
 __device__ __constant__ double devPI = 3.14159265358979323846;
 __device__ double delta[6] = { 1., 0., 0., 1., 0., 1. };
+
 //__device__ __constant__ double d_idx, d_idy, d_idz, d_iddx, d_iddy, d_iddz;
 
 __device__ double trQQ_f(double Q[6]){
@@ -22,13 +23,13 @@ __device__ double trace_f(double Q[6]){
 
 }
 
-__global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor, unsigned int* d_Qtensor_index, unsigned char* d_Qtensor_signal, int chiral,
-	double U, double U2, double qch, double L1, double L2, double L3, double L4, unsigned int bulk, double idx, double idy, double idz,
-	double iddx, double iddy, double iddz, double dt) 
+__global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int* d_neighbor, unsigned int* d_Qtensor_index, unsigned char* d_Qtensor_signal,
+	double U, double U2, int chiral, double qch, double L1, double L2, unsigned int bulk, double idx, double idy, double idz, double iddx, double iddy, double iddz, double dt) 
 	{
 	
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
-	//if(indx == 100) printf("DevThir is %lf", devThird);
+
+
 	if (indx < bulk) {
 		
 		double Qin[6];
@@ -140,6 +141,8 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 		ddQ[5][5] = (d_Qold[zp * 6 + 5] + d_Qold[zm * 6 + 5] - 2. * Qin[5]) * iddz;
 		Qelas[5] = ddQ[0][5] + ddQ[3][5] + ddQ[5][5];
 
+		//printf("L1:%lf L2:%lf L3:%lf L4:%lf", L1_dev, L2_dev, L3_dev, L4_dev);
+
 		if (chiral == 1) {
 
 			dQ[0][0] = (d_Qold[xp * 6 + 0] - d_Qold[xm * 6 + 0]) * 0.5 * idx;
@@ -168,9 +171,10 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			
 		}
 
-		if((L2 + L4) != 0 || L3 != 0){
+		//if((L2 + L4) != 0 || L3 != 0){
+		if(L2 != 0){
 			if(Q_signal == 0){
-
+				
 				//neighbor xpyp is the yp neighbor of xp: neighbor[xp * 6 + 3]; same definition for other points
 				ddQ[1][0] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 0] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 0] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 0] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 0]) * idx * idy * 0.25;
 				ddQ[2][0] = (d_Qold[d_neighbor[xp * 6 + 5] * 6 + 0] + d_Qold[d_neighbor[xm * 6 + 4] * 6 + 0] - d_Qold[d_neighbor[xm * 6 + 5] * 6 + 0] - d_Qold[d_neighbor[xp * 6 + 4] * 6 + 0]) * idx * idz * 0.25;
@@ -224,8 +228,19 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 				ddQ[4][5] = 0;
 				
 			}
+
+			Qelas2[0] = ddQ[0][0] + ddQ[1][1] + ddQ[2][2];
+			Qelas2[1] = 0.5 * (ddQ[1][0] + ddQ[0][1] + ddQ[1][3] + ddQ[3][1] + ddQ[2][4] + ddQ[4][2]);
+			Qelas2[2] = 0.5 * (ddQ[2][0] + ddQ[0][2] + ddQ[1][4] + ddQ[4][1] + ddQ[2][5] + ddQ[5][2]);
+			Qelas2[3] = ddQ[1][1] + ddQ[3][3] + ddQ[4][4];
+			Qelas2[4] = 0.5 * (ddQ[1][2] + ddQ[2][1] + ddQ[5][4] + ddQ[4][5] + ddQ[3][4] + ddQ[4][3]);
+			Qelas2[5] = ddQ[2][2] + ddQ[4][4] + ddQ[5][5];
+			Qelas2[0] -= trace_f(Qelas2);
+			Qelas2[3] -= trace_f(Qelas2);
+			Qelas2[5] -= trace_f(Qelas2);
+
 		}
-		if((L2 + L4) != 0){
+		/*if((L2 + L4) != 0){
 			Qelas2[0] = ddQ[0][0] + ddQ[1][1] + ddQ[2][2];
 			Qelas2[1] = 0.5 * (ddQ[1][0] + ddQ[0][1] + ddQ[1][3] + ddQ[3][1] + ddQ[2][4] + ddQ[4][2]);
 			Qelas2[2] = 0.5 * (ddQ[2][0] + ddQ[0][2] + ddQ[1][4] + ddQ[4][1] + ddQ[2][5] + ddQ[5][2]);
@@ -241,7 +256,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			Qelas2[3] -= trace_f(Qelas2);
 			Qelas2[5] -= trace_f(Qelas2);
 
-		} 
+		}
 		/*if(L3 != 0){
 
 			Qelas3[0] = - 0.5 * trqq(dQ[0]);
@@ -262,25 +277,29 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			Qelas3[5] -= trace;
 		} */
 
-		if (chiral == 1) {
+		if(chiral == 1) {
 			Qch[0] = 2. * (dQ[1][2] - dQ[2][1]);
 			Qch[3] = 2. * (dQ[2][1] - dQ[0][4]);
 			Qch[5] = 2. * (dQ[0][4] - dQ[1][2]);
 			Qch[1] = dQ[1][4] - dQ[2][3] + dQ[2][0] - dQ[0][2];
 			Qch[2] = dQ[1][5] - dQ[2][4] + dQ[0][1] - dQ[1][0];
 			Qch[4] = dQ[2][2] - dQ[0][5] + dQ[0][3] - dQ[1][1];
-		}
+		} 
 
+		//printf("Done %d %d", indx, Q_signal);
 		__syncthreads();
 
-		d_Qold[Q_indx * 6 + 0] = Qin[0] + dt * (-Qldg[0] + L1 * Qelas[0] + (L2 + L4) * Qelas2[0] - 2. * (double)chiral * qch * L1 * Qch[0]);
-		d_Qold[Q_indx * 6 + 1] = Qin[1] + dt * (-Qldg[1] + L1 * Qelas[1] + (L2 + L4) * Qelas2[1] - 2. * (double)chiral * qch * L1 * Qch[1]);
-		d_Qold[Q_indx * 6 + 2] = Qin[2] + dt * (-Qldg[2] + L1 * Qelas[2] + (L2 + L4) * Qelas2[2] - 2. * (double)chiral * qch * L1 * Qch[2]);
-		d_Qold[Q_indx * 6 + 3] = Qin[3] + dt * (-Qldg[3] + L1 * Qelas[3] + (L2 + L4) * Qelas2[3] - 2. * (double)chiral * qch * L1 * Qch[3]);
-		d_Qold[Q_indx * 6 + 4] = Qin[4] + dt * (-Qldg[4] + L1 * Qelas[4] + (L2 + L4) * Qelas2[4] - 2. * (double)chiral * qch * L1 * Qch[4]);
-		d_Qold[Q_indx * 6 + 5] = Qin[5] + dt * (-Qldg[5] + L1 * Qelas[5] + (L2 + L4) * Qelas2[5] - 2. * (double)chiral * qch * L1 * Qch[5]);
+		//d_Qold[Q_indx * 6 + 0] = Qin[0] + dt * (-Qldg[0] + L1 * Qelas[0] + (L2 + L4) * Qelas2[0] - 2. * (double)chiral * qch * L1 * Qch[0]);
 
+		d_Qold[Q_indx * 6 + 0] = Qin[0] + dt * (-Qldg[0] + L1 * Qelas[0] + L2 * Qelas2[0] - 2. * (double)chiral * qch * L1 * Qch[0]);
+		d_Qold[Q_indx * 6 + 1] = Qin[1] + dt * (-Qldg[1] + L1 * Qelas[1] + L2 * Qelas2[1] - 2. * (double)chiral * qch * L1 * Qch[1]);
+		d_Qold[Q_indx * 6 + 2] = Qin[2] + dt * (-Qldg[2] + L1 * Qelas[2] + L2 * Qelas2[2] - 2. * (double)chiral * qch * L1 * Qch[2]);
+		d_Qold[Q_indx * 6 + 3] = Qin[3] + dt * (-Qldg[3] + L1 * Qelas[3] + L2 * Qelas2[3] - 2. * (double)chiral * qch * L1 * Qch[3]);
+		d_Qold[Q_indx * 6 + 4] = Qin[4] + dt * (-Qldg[4] + L1 * Qelas[4] + L2 * Qelas2[4] - 2. * (double)chiral * qch * L1 * Qch[4]);
+		d_Qold[Q_indx * 6 + 5] = Qin[5] + dt * (-Qldg[5] + L1 * Qelas[5] + L2 * Qelas2[5] - 2. * (double)chiral * qch * L1 * Qch[5]);
+		
 	}
+ 
 
 }
 
@@ -495,7 +514,8 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 				
 			}
 
-			if(L2 != 0 || L3 != 0 || L4 != 0){
+			//if(L2 != 0 || L3 != 0 || L4 != 0){
+			if(L2 != 0){
 
 				if(loc_nu[0] < 0.){
 					dQ[0][0] = -dQ[0][0];

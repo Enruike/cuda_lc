@@ -17,6 +17,10 @@ __device__ double d_trqq(double Qin[6]){
         return ans;
 }
 
+/* __global__ void test_symbol(void){
+	printf("L1_dev is %lf", L1_dev);
+}
+ */
 __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 
 	unsigned int indx = threadIdx.x + blockDim.x * blockIdx.x;
@@ -324,17 +328,18 @@ int main() {
 		cudaDeviceSynchronize();*/
 
 		unsigned int threads_per_block = 512;
+		unsigned int blk_thrds = 384;
 		//size for surface
 		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
 		//size for bulk
-		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
-
-		unsigned int dropletBlocks = rint(droplet / threads_per_block) + 1;
+		unsigned int bulkBlocks = rint(bulk / blk_thrds) + 1;
 
 		printf("The number of Bulk Blocks is %d\n", bulkBlocks);
 
 		printf("The number of Surf Blocks is %d\n", surfBlocks);
+
+		unsigned int dropletBlocks = rint((bulk + surf + nsurf) / threads_per_block) + 1;
 
 		printf("The number of Droplet Blocks is %d\n\n", dropletBlocks);
 
@@ -343,6 +348,23 @@ int main() {
 		//cudaMemcpyToSymbol(devThird, &third, sizeof(double));
 		//__host__ __device__ __constant__ double d_idx;
 		//cudaMemcpyToSymbol(d_idx, &idx, sizeof(double));
+
+		/* Copy symbols */
+	/* 	cudaMemcpyToSymbol(chiral_dev, &chiral, sizeof(int));
+		
+		printf("host L1 value %lf", L1);
+
+		cudaStatus = cudaMemcpyToSymbol(L1_dev, &L1, sizeof(double));
+		if (cudaStatus != cudaSuccess) {
+			fprintf(stderr, "failed Memcpy Symbol!");
+			return 0;
+		}
+
+		test_symbol<<<1,16>>>();
+
+		cudaMemcpyToSymbol(L2_dev, &L2, sizeof(float));
+		cudaMemcpyToSymbol(L3_dev, &L3, sizeof(float));
+		cudaMemcpyToSymbol(L4_dev, &L4, sizeof(float)); */
 
 		//Progress bar
 		const char *shade = "\u2592";
@@ -408,15 +430,18 @@ int main() {
 					printf(shade2);
 				}
 
-				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal, chiral,
-					U, U2, qch, L1, L2, L3, L4, bulk, idx, idy, idz, iddx, iddy, iddz, dt);
+				/* test_symbol<<<1,32>>>();
+				cudaDeviceSynchronize(); */
+
+				relax_bulk<<<bulkBlocks, blk_thrds>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal,
+					U, U2, chiral, qch,L1, L2, bulk, idx, idy, idz, iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize(); 
 
 				relax_surf<<<surfBlocks, threads_per_block>>>(d_Qold, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, L2, L3, L4,
 					tiltAngle, (surf + nsurf), degenerate, infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
 
 				cudaDeviceSynchronize();
-
+ 
 				if(dt < tmax){
 					dt += dtime;
 					if(dt >= tmax){
