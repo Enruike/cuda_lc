@@ -34,7 +34,7 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 
 		if(tr > 1e-5) {
 			
-			printf("Correcting trace for node %d!\n %f %f %f %f %f %f\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
+			printf("Correcting trace %lf for node %d!\n %f %f %f %f %f %f\n", tr, indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
 				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5]);
 
 			d_Qold[indx * 6 + 0] -= tr;
@@ -43,18 +43,19 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 			//printf("Non-tracelss.\n");			
 		}
 
-			double Qin[6] = { 0. };
+		double Qin[6] = { 0. };
 
-            for(int i = 0; i < 6; i++){
-                Qin[i] = d_Qold[indx * 6 + i];
-            }
+		for(int i = 0; i < 6; i++){
+			Qin[i] = d_Qold[indx * 6 + i];
+		}
 
-            if(d_trqq(Qin) > 1.){
-        //              for(n = 0; n < 6; n ++){
-        //                      Q[n] /= 1.3;
-        //              }
-                printf("Order parameter exceed 1.\n");
-            }
+		if(d_trqq(Qin) > 1.){
+	//              for(n = 0; n < 6; n ++){
+	//                      Q[n] /= 1.3;
+	//              }
+			printf("Order parameter exceed 1. For node #%d\nQ info %f %f %f %f %f %f\nTrQQ:%lf\n", indx, d_Qold[indx * 6 + 0], d_Qold[indx * 6 + 1],\
+				d_Qold[indx * 6 + 2], d_Qold[indx * 6 + 3], d_Qold[indx * 6 + 4], d_Qold[indx * 6 + 5], d_trqq(Qin));
+		}
 	}
 }
 

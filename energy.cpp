@@ -114,7 +114,7 @@ void ldg_energy(double ldg_ans[3]) {
 				trace2 = trqq(Qin);
 				trace3 = trqqq(Qin);
 
-				if (h_bulktype[i] == 1){
+				if (h_bulktype[i] == 1 || h_bulktype[i] == 13){
 					ldg_ans[0] += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 					ldg_ans[1] += 0.5 * (1. - U / 3.) * trace2 - U / 3. * trace3 + U * 0.25 * trace2 * trace2;
 				}
@@ -186,7 +186,7 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 			}
 			ans[0] += trqq(dQ[0]) + trqq(dQ[1]) + trqq(dQ[2]);
 			if(DoubleU){
-				if(h_bulktype[i] == 1){
+				if(h_bulktype[i] == 1 || h_bulktype[i] == 13){
 					ans_in[0] += trqq(dQ[0])+trqq(dQ[1])+trqq(dQ[2]);
 				}
 				else if(h_bulktype[i] == 2 || h_bulktype[i] == 3){
@@ -201,7 +201,7 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 				ans[1] += matr_mult(vec);
 
 				if(DoubleU){
-					if(h_bulktype[i] == 1){
+					if(h_bulktype[i] == 1 || h_bulktype[i] == 13){
 						ans_in[1] += matr_mult(vec);
 					}
 					else if(h_bulktype[i] == 2 || h_bulktype[i] == 3){
@@ -215,7 +215,7 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 				ans[1] += matr_mult(vec);
 
 				if(DoubleU){
-					if(h_bulktype[i] == 1){
+					if(h_bulktype[i] == 1 || h_bulktype[i] == 13){
 						ans_in[1] += matr_mult(vec);
 					}
 					else if(h_bulktype[i] == 2 || h_bulktype[i] == 3){
@@ -229,7 +229,7 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 				ans[1] += matr_mult(vec);
 
 				if(DoubleU){
-					if(h_bulktype[i] == 1){
+					if(h_bulktype[i] == 1 || h_bulktype[i] == 13){
 						ans_in[1] += matr_mult(vec);
 					}
 					else if(h_bulktype[i] == 2 || h_bulktype[i] == 3){
@@ -246,7 +246,7 @@ void elastic_energy(double ans[5], double ans_in[5], double ans_out[5]) {
 					- Qin[5] * dQ[1][2] - Qin[1] * dQ[0][2] - Qin[3] * dQ[0][4] - Qin[4] * dQ[0][5];
 
 				if(DoubleU){
-					if(h_bulktype[i] == 1){
+					if(h_bulktype[i] == 1 || h_bulktype[i] == 13){
 						ans_in[4] += Qin[0] * dQ[1][2] + Qin[1] * dQ[1][4] + Qin[2] * dQ[1][5] + Qin[1] * dQ[2][0] + Qin[3] * dQ[2][1] + Qin[4] * dQ[2][2]  + Qin[2] * dQ[0][1] + Qin[4] * dQ[0][3] + Qin[5] * dQ[0][4]  - Qin[0] * dQ[2][1] - Qin[1] * dQ[2][3] - Qin[2] * dQ[2][4]  - Qin[2] * dQ[1][0] - Qin[4] * dQ[1][1] - Qin[5] * dQ[1][2] - Qin[1] * dQ[0][2] - Qin[3] * dQ[0][4] - Qin[4] * dQ[0][5];					}
 					else if(h_bulktype[i] == 2 || h_bulktype[i] == 3){
 						ans_out[4] += Qin[0] * dQ[1][2] + Qin[1] * dQ[1][4] + Qin[2] * dQ[1][5] + Qin[1] * dQ[2][0] + Qin[3] * dQ[2][1] + Qin[4] * dQ[2][2]  + Qin[2] * dQ[0][1] + Qin[4] * dQ[0][3] + Qin[5] * dQ[0][4]  - Qin[0] * dQ[2][1] - Qin[1] * dQ[2][3] - Qin[2] * dQ[2][4]  - Qin[2] * dQ[1][0] - Qin[4] * dQ[1][1] - Qin[5] * dQ[1][2] - Qin[1] * dQ[0][2] - Qin[3] * dQ[0][4] - Qin[4] * dQ[0][5];					}

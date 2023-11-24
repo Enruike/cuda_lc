@@ -7,7 +7,11 @@
 #	4: Channel surface
 #	5: Nanoparticle nodes
 #	6: Nanoparticle surface
-
+#	
+#	For bulk nodes near to isotropic interface, lets define a new type
+#	13: Bulk node near to isotropic phase. L2 derivates will be 0.
+#		type 1 & 13 are the same for nanochannel geometry. They are U1.
+#	
 #	Signal 
 #	0: Bulk
 #	1: Bulk with surface neighbors
@@ -330,6 +334,35 @@ bool nanochannel(){
         }
 
     }
+
+	/* Defining bulk nodes near to isotropic phase */
+
+	l = 0;
+	int btype_13 = 0;
+
+    for(int k = 0; k < Nz; k++){
+        for(int j = 0; j < Ny; j++){
+            for(int i = 0; i < Nx; i++){
+
+                if(drop[l]){
+                    xm = peri(i - 1, 0) + j * Nx + k * Nx * Ny;
+                    xp = peri(i + 1, 0) + j * Nx + k * Nx * Ny;
+                    ym = i + peri(j - 1, 1) * Nx + k * Nx * Ny;
+                    yp = i + peri(j + 1, 1) * Nx + k * Nx * Ny;
+                    zm = i + j * Nx + (k - 1) * Nx * Ny;
+                    zp = i + j * Nx + (k + 1) * Nx * Ny;
+
+					if(bulktype[xm] == 3 || bulktype[xp] == 3 || bulktype[ym] == 3 || bulktype[yp] == 3 || bulktype[zm] == 3 || bulktype[xp] == 3){
+						bulktype[l] = 13;
+						btype_13++;
+					}
+                }
+                l++;          
+            }
+        }
+    }
+
+	printf("\nBulktype 13 %d\n", btype_13);
 
     dV = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / bulk;
     dVi = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / (bulk - interbulk);
@@ -691,11 +724,18 @@ bool nanochannel(){
 
 	nd = 0;
     int t1 = 0, t2 = 0, t3 = 0, t4 = 0, t5 = 0, t6 = 0;
+	int t13 = 0;
+
 	for (int i = 0; i < total_points; i++) {
 		if (bulktype[i] == 1) {
 			h_bulktype[nd] = 1;
 			nd++;
             t1++;
+		}
+		else if(bulktype[i] == 13){
+			h_bulktype[nd] = 13;
+			nd++;
+            t13++;
 		}
 		else if (bulktype[i] == 2) {
 			h_bulktype[nd] = 2;

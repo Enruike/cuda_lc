@@ -173,7 +173,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 
 		//if((L2 + L4) != 0 || L3 != 0){
 		if(L2 != 0){
-			if(Q_signal == 0){
+			if(Q_signal == 0 && d_bulktype[Q_indx] != 13){
 				
 				//neighbor xpyp is the yp neighbor of xp: neighbor[xp * 6 + 3]; same definition for other points
 				ddQ[1][0] = (d_Qold[d_neighbor[xp * 6 + 3] * 6 + 0] + d_Qold[d_neighbor[xm * 6 + 2] * 6 + 0] - d_Qold[d_neighbor[xm * 6 + 3] * 6 + 0] - d_Qold[d_neighbor[xp * 6 + 2] * 6 + 0]) * idx * idy * 0.25;
