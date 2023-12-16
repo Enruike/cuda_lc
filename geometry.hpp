@@ -54,6 +54,7 @@ double pivotX, pivotY, pivotZ;
 int posX, posY, posZ;
 int pivotflag;
 int count1;
+int pdegenerate;
 
 //Deltas
 double dx, dy, dz;

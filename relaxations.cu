@@ -303,6 +303,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 
 }
 
+//variable degenerate it's only relevant for the system surface. For nanoparticle surface, we will use degen and signal types.
 __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int* d_Nvector_index, unsigned char* d_Nvector_signal, double* d_Qo, 
 	int chiral, double qch, double L1, double L2, double L3, double L4, double tiltAngle, unsigned int surf, int degenerate, int infinite, double Wstr, double Wp, double* d_nu, double d_idx, 
 	double d_idy, double d_idz, double dt, double S){
@@ -312,6 +313,15 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 	
 	if (indx < surf) {
 
+		unsigned int signal = d_Nvector_signal[indx];
+		unsigned int nv_indx = d_Nvector_index[indx];
+
+		//8 is for Infinite homeotropic
+		if(signal == 8){
+			return;
+		}
+
+		unsigned char degen = 0;
 		double loc_nu[3] = { 0. };
 		double Qin[6] = { 0. };
 		double Qdiff[6] = { 0. };
@@ -324,12 +334,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		double Qch[6] = { 0 };
 		double trace = 0.;
 
-		unsigned int signal = d_Nvector_signal[indx];
-		unsigned int nv_indx = d_Nvector_index[indx];
-
-		if(signal == 8){
-			return;
-		}
+		
 
 		// if(indx == 0){
 		// 	printf("Surf is %d\n", surf);
@@ -340,7 +345,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		//for nanoparticle boundary
 		//4 is for NInf
 		//6 is for degenerate
-		//8 is for Infinite homeotropic
+		
 		if (signal == 4 || signal == 5) {
 			degenerate = 0;
 			infinite = 0;
@@ -348,6 +353,16 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 		}
 		else if (signal == 6 || signal == 7) {
 			degenerate = 1;
+			infinite = 0;
+			Wstr = Wp;
+		}
+		else if(signal == 20 || signal == 21){
+			degenerate = 1;
+			infinite = 0;
+			Wstr = Wp;
+		}
+		else if(signal == 22 || signal == 23){
+			degenerate = 2;
 			infinite = 0;
 			Wstr = Wp;
 		}

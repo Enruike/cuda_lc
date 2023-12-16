@@ -41,6 +41,7 @@ bool read_nano(){
     fscanf(param, "gamma %lf\n", &gama);
     fscanf(param, "interface %d #thickness of the interface layer; 0: no interface\n", &interface);
     fscanf(param, "anchoring %d #0:random 1:homeotropic 2:planar\n", &anchoring);
+	fscanf(param, "degenerate %d	#0:No 1:Planar degenerate 2:Conic degenerate\n", &pdegenerate);
     fscanf(param, "posX %d #0 for center; nanoparticle position\n", &posX);
     fscanf(param, "posY %d\n", &posY);
     fscanf(param, "posZ %d\n", &posZ);
@@ -74,6 +75,19 @@ bool read_nano(){
         printf("unknonw anchoring\n");
         return false;
     }
+	if(pdegenerate == 0){
+		printf("Nanoparticle surface will not evolve\n");
+	}
+	else if(pdegenerate == 1){
+		printf("Nanoparticle will planar degenerate surface evolution\n");
+	}
+	else if(pdegenerate == 2){
+		printf("Nanoparticle will conic degenerate surface evolution\n");
+	}
+	else{
+		printf("Unknown nanoparticle surface evolution! Something's wrong!\n");
+		exit(1);
+	}
     if(pivotflag == 0){
         printf("Nanoparticle position will be in the center of the box\n");
     }
@@ -362,7 +376,7 @@ bool nanochannel(){
         }
     }
 
-	printf("\nBulktype 13 %d\n", btype_13);
+	if(interface != 0) printf("\nBulktype 13 nodes number : %d\n", btype_13);
 
     dV = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / bulk;
     dVi = (Lx * Ly * Lz - 4. / 3. * M_PI * pRx * pRy * pRz) / (bulk - interbulk);
@@ -444,6 +458,8 @@ bool nanochannel(){
     int countshare2 = 0;
     int countshare4 = 0;
     int countshare8 = 0;
+	int countshare20 = 0;
+	int countshare22 = 0;
     int shareminusone = 0;
     int undefined = 0;
     count1 = 0;
@@ -473,7 +489,8 @@ bool nanochannel(){
             
         }
     }
-    printf("Pre share count 0 : %d, 2 : %d, 4 : %d, 8 : %d, total : %d\n", countshare0, countshare2, countshare4, countshare8, count1);
+
+    printf("Preshare count 0 : %d, 2 : %d, 4 : %d, 8 : %d, total : %d\n", countshare0, countshare2, countshare4, countshare8, count1);
     printf("-1 : %d, undefined : %d\n", shareminusone, undefined);
 
     if (nd != droplet){
@@ -606,14 +623,27 @@ bool nanochannel(){
                                 printf("Not available yet\n");
                                 exit(1);
                             }
-                            //La superficie no evoluciona
-                            signal[nd] = 8;
-                            Qold[nd * 6 + 0] = dir2ten(&nu[nb * 3], 0, S);
-                            Qold[nd * 6 + 1] = dir2ten(&nu[nb * 3], 1, S);
-                            Qold[nd * 6 + 2] = dir2ten(&nu[nb * 3], 2, S);
-                            Qold[nd * 6 + 3] = dir2ten(&nu[nb * 3], 3, S);
-                            Qold[nd * 6 + 4] = dir2ten(&nu[nb * 3], 4, S);
-                            Qold[nd * 6 + 5] = dir2ten(&nu[nb * 3], 5, S);
+
+							if(pdegenerate == 0){
+								//La superficie no evoluciona
+								signal[nd] = 8;
+								
+							}
+							else if(pdegenerate == 1){
+								signal[nd] = 20;
+							}
+							else if(pdegenerate == 2){
+								signal[nd] = 22;
+							}
+
+							Qold[nd * 6 + 0] = dir2ten(&nu[nb * 3], 0, S);
+							Qold[nd * 6 + 1] = dir2ten(&nu[nb * 3], 1, S);
+							Qold[nd * 6 + 2] = dir2ten(&nu[nb * 3], 2, S);
+							Qold[nd * 6 + 3] = dir2ten(&nu[nb * 3], 3, S);
+							Qold[nd * 6 + 4] = dir2ten(&nu[nb * 3], 4, S);
+							Qold[nd * 6 + 5] = dir2ten(&nu[nb * 3], 5, S);
+                            
+                            
                             
                         }
                     }
@@ -681,6 +711,14 @@ bool nanochannel(){
             countshare8++;
             count1++;
         }
+		else if(signal[i] == 20){
+            countshare20++;
+			count1++;
+        }
+		else if(signal[i] == 22){
+            countshare22++;
+			count1++;
+        }
         else if(signal[i] == -1){
             shareminusone++;
         }
@@ -688,6 +726,10 @@ bool nanochannel(){
             undefined++;
         }
     }
+
+	if(pdegenerate == 1 || pdegenerate == 2){
+		printf("Degenerated nanoparticle surface nodes 20 : %d, 22 : %d\n", countshare20, countshare22);
+	}
 
     printf("After count 0 : %d, 2 : %d, 4 : %d, 8 : %d, total : %d\n", countshare0, countshare2, countshare4, countshare8, count1);
     printf("-1 : %d, undefined : %d\n", shareminusone, undefined);

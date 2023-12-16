@@ -124,7 +124,7 @@ int main() {
 		unsigned int nb = 0;
 
 		for (int i = 0; i < droplet; i++) {
-			if ((signal[i] >= 2 && signal[i] <= 8) || (signal[i] == 12 || signal[i] == 13)) {
+			if ((signal[i] >= 2 && signal[i] <= 8) || (signal[i] == 12 || signal[i] == 13) || (signal[i] >= 20 && signal[i] <= 23)) {
 				h_Nvector_index[nb] = i;				//We can find the Qtensor index of the Surface Vector point (nu_p or nu).
 				h_Nvector_signal[nb] = signal[i];		//Type of point.
 				nb++;
@@ -140,7 +140,7 @@ int main() {
 		nb = 0;
 
 		for (int i = 0; i < droplet; i++) {
-			if ((signal[i] >= 2 && signal[i] <= 8) || (signal[i] == 12 || signal[i] == 13)) {
+			if ((signal[i] >= 2 && signal[i] <= 8) || (signal[i] == 12 || signal[i] == 13) || (signal[i] >= 20 && signal[i] <= 23)) {
 				if (Qold[h_Nvector_index[nb]] != Qold[i]) {
 					printf("Error in transfer from Qtensor to Surface Index Vector!\n");
 					exit(1);
