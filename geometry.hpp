@@ -6,6 +6,7 @@
 
 bool ellipsoid();
 bool nanochannel();
+bool shell();
 
 extern double dir2ten(double* vec, int n, double S);
 extern bool norm_v(double *vec);
@@ -33,7 +34,7 @@ unsigned int surf, nsurf;
 //Guarda los tipos de nodo para ser transferidos al dispositivo.
 unsigned char* h_bulktype;
 //Delta de Volumen.
-double dV, dVi, dVo;
+double dV, dVi, dVo, dVshell;
 //Delta de Área
 double dA;
 //Radios o centros del sistema. No de la caja.

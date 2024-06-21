@@ -37,6 +37,6 @@ iRx 120
 iRy 120
 iRz 120
 Save Every 30000
-Check Every 10000
+Check Every 500
 Stop At 0                  	#For non-stop condition use 0.
 Check Trace At 10000
