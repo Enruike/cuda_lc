@@ -334,7 +334,7 @@ int main() {
 		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
 		//size for bulk
-		unsigned int bulkBlocks = rint(bulk / threads_per_block) + 1;
+		unsigned int bulkBlocks = rint(bulk / blk_thrds) + 1;
 
 		printf("The number of Bulk Blocks is %d\n", bulkBlocks);
 
@@ -434,7 +434,7 @@ int main() {
 				/* test_symbol<<<1,32>>>();
 				cudaDeviceSynchronize(); */
 
-				relax_bulk<<<bulkBlocks, threads_per_block>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal,
+				relax_bulk<<<bulkBlocks, blk_thrds>>>(d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal,
 					U, U2, chiral, qch,L1, L2, bulk, idx, idy, idz, iddx, iddy, iddz, dt);
 				cudaDeviceSynchronize(); 
 
