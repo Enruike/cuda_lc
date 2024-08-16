@@ -14,7 +14,7 @@ chiral 0
 qch 0.182650736
 redshift 0.86                   #Default values BPI = 0.71 & BPII = 0.86.
 geo 10
-degenerate 0                    #1:Degenerated & 2:Conic
+degenerate 0                    #1:Planar & 2:Conic
 tiltAngle 36
 infinite 0
 Np 0

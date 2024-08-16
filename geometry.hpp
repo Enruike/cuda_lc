@@ -34,7 +34,7 @@ unsigned int surf, nsurf;
 //Guarda los tipos de nodo para ser transferidos al dispositivo.
 unsigned char* h_bulktype;
 //Delta de Volumen.
-double dV, dVi, dVo, dVshell;
+double dV, dVi, dVo;
 //Delta de Área
 double dA;
 //Radios o centros del sistema. No de la caja.

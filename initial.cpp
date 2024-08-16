@@ -8,6 +8,9 @@ bool initial() {
 		ellipsoid();
 		//return true;
 		break;
+	case -4:
+		shell();
+		break;
 	case 10:
 		nanochannel();
 		break;

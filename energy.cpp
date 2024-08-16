@@ -22,7 +22,7 @@ void free_energy() {
 	old_en = en_tot;
 
 	if(DoubleU){
-			if(cycle % check_every == 0){
+		if(cycle % check_every == 0){
 			printf("LdG: %lf, En_L1: %lf", en_ldg[0], en_el[0]);
 			if(L2 != 0){
 				printf(", L2: %lf", en_el[1]);

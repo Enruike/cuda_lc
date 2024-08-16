@@ -170,7 +170,7 @@ __global__ void relax_bulk(double* d_Qold, unsigned char* d_bulktype, signed int
 			dQ[2][5] = (d_Qold[zp * 6 + 5] - d_Qold[zm * 6 + 5]) * 0.5 * idz;
 			
 		}
-
+		/*
 		//if((L2 + L4) != 0 || L3 != 0){
 		if(L2 != 0){
 			//if(Q_signal == 0 && d_bulktype[Q_indx] != 13){
@@ -529,7 +529,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 				
 			}
 
-			//if(L2 != 0 || L3 != 0 || L4 != 0){
+			/*//if(L2 != 0 || L3 != 0 || L4 != 0){
 			if(L2 != 0){
 
 				if(loc_nu[0] < 0.){
@@ -548,9 +548,9 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 					dQ[2][2] = -dQ[2][2];
 				}
 
-			}
+			}*/
 
-			if(L2 != 0){
+			/*if(L2 != 0){
 				
 				temp[0] = dQ[0][0] + dQ[1][1] + dQ[2][2];
 				temp[1] = dQ[0][1] + dQ[1][3] + dQ[2][4];
@@ -562,7 +562,7 @@ __global__ void relax_surf(double* d_Qold, signed int* d_neighbor, unsigned int*
 				Qelas2[1] = 0.5 * (loc_nu[0] * temp[1] + loc_nu[1] * temp[0]);
 				Qelas2[2] = 0.5 * (loc_nu[0] * temp[2] + loc_nu[2] * temp[0]);
 				Qelas2[4] = 0.5 * (loc_nu[2] * temp[1] + loc_nu[1] * temp[2]);
-			}
+			}*/
 
 			if (chiral == 1) {
 				Qch[0] = loc_nu[2] * Qin[1] - loc_nu[1] * Qin[2];

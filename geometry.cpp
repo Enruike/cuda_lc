@@ -1380,7 +1380,6 @@ bool shell(){
 					zp = i + j * Nx + (k + 1) * Nx * Ny;
 					if (!drop[xm] || !drop[xp] || !drop[ym] || !drop[yp] || !drop[zm] || !drop[zp]) {
 						boundary[l] = true;
-						drop[i] = false;
 						surf++;
 					}
 				}
@@ -1401,16 +1400,22 @@ bool shell(){
 
 	printf("Droplet nodes number is % d\nBulk nodes number is % d\nSurface nodes number is % d\n", droplet, bulk, surf);
 
-	//Shell's volume
-	dVshell = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)bulk;
+	//Redifining drop nodes for drop array.
+	for (int i = 0; i < total_points; i++) {
+		if (boundary[i]) drop[i] = false;
+	}
 
-	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075)) / (double)surf;
+	//Shell's volume
+	dV = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)bulk;
+
+	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075) + \
+		4.0 * (double)M_PI * pow((pow(iRx * iRy, 1.6075) + pow(iRx * iRz, 1.6075) + pow(iRy * iRz, 1.6075)) / 3.0, 1.0000 / 1.6075))/ (double)surf;
 
 	
 	printf("Shell Nodes = %d\n", bulk + surf);
 	printf("External bulk count contains surface nodes!!\n");
 	printf("External count after substracting surface nodes is %d\n", bulk);
-	printf("dV = %lf\n", dVshell);
+	printf("dV = %lf\n", dV);
 	printf("dA = %lf\n", dA);
 	
 	//Allocating memory for surface vectors and tensors
@@ -1488,10 +1493,12 @@ bool shell(){
 	if (nd != droplet) {
 		printf("Problem in initialization of qtensor. nd is %d not equal to droplet %d.\n", nd, droplet);
 		return false;
+		exit(1);
 	}
 	if (nb != surf) {
 		printf("Problem in initialization of qtensor. nb is %d not equal to surf %d.\n", nb, surf);
 		return false;
+		exit(1);
 	}
 
 	//Initial configuration
@@ -1533,13 +1540,22 @@ bool shell(){
 					}
 
 					//Normal vector
-					nu[nb * 3 + 0] = -2. * x / (Rx * Rx);
-					nu[nb * 3 + 1] = -2. * y / (Ry * Ry);
-					nu[nb * 3 + 2] = -2. * z / (Rz * Rz);
+					//nu[nb * 3 + 0] = -2. * x / (Rx * Rx);
+					//nu[nb * 3 + 1] = -2. * y / (Ry * Ry);
+					//nu[nb * 3 + 2] = -2. * z / (Rz * Rz);
+
+					//Planar
+					/*nu[nb * 3 + 0] = dir1[0];
+					nu[nb * 3 + 1] = dir1[1];
+					nu[nb * 3 + 2] = dir1[2];*/
+
+					//Planar x dir
+					nu[nb * 3 + 0] = 1;
+					nu[nb * 3 + 1] = 0;
+					nu[nb * 3 + 2] = 0;
 
 					//Tangential Vector for plannar anchoring A=(0, 1, 0). 
 					//T=(2x/rx^2 + 2y/ry^2 + 2z/rz^2)
-
 
 					norm_v(&nu[nb * 3]);
 
@@ -1686,6 +1702,6 @@ bool shell(){
 	
 	free(qindex);
 	free(bulktype);
-    printf("Ellipsoid initialized successfully!\n");
+    printf("Shell initialized successfully!\n");
 	return true;
 }
