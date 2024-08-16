@@ -329,7 +329,7 @@ int main() {
 		cudaDeviceSynchronize();*/
 
 		unsigned int threads_per_block = 512;
-		unsigned int blk_thrds = 384;
+		unsigned int blk_thrds = 256;
 		//size for surface
 		unsigned int surfBlocks = rint((surf + nsurf) / threads_per_block) + 1;		
 
