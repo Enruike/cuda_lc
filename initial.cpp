@@ -11,6 +11,9 @@ bool initial() {
 	case -4:
 		shell();
 		break;
+	case -44:
+		not_evolving_shell();
+		break;
 	case 10:
 		nanochannel();
 		break;

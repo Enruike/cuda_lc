@@ -7,6 +7,7 @@
 bool ellipsoid();
 bool nanochannel();
 bool shell();
+bool not_evolving_shell();
 
 extern double dir2ten(double* vec, int n, double S);
 extern bool norm_v(double *vec);
