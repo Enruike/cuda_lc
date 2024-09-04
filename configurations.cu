@@ -76,7 +76,7 @@ bool conf() {
 	}
 	
 	else if(seed == -1442 || seed == -1443 || seed == -1444 || seed == -1445 ||
-			seed == -1446){
+			seed == -1446 || seed == -14487 || seed == -14488 || seed == -14489){
 		
 		if(!norm_v(init_dir)){
 			return false;
@@ -306,6 +306,86 @@ bool conf() {
 				}
 			}
 		}
+		else if(seed == -14487 || seed == -14488 || seed == -14489){
+
+			//Helicoidal en Z
+			if(seed == -14487){
+				for(int k = 0; k < Nz; k++){
+					for (int j = 0; j < Ny; j++){
+						for (int i = 0; i < Nx; i++){
+							
+							if(bulktype[l] == 1){
+								dir[0] = cos(qch * (k - rz));
+								dir[1] = sin(qch * (k - rz));
+							
+								for(int n = 0; n < 6; n ++){
+									Qold[nd * 6 + n] = dir2ten(dir, n, S);
+								}
+								nd ++;
+							}
+							else if(bulktype[l] == 2 || bulktype[l] == 3){
+								nd++;
+							}
+
+							l++;
+
+						}
+					}
+                }
+			}
+			//Helicoidal en X
+			else if(seed == -14488){
+				for(int k = 0; k < Nz; k++){
+					for (int j = 0; j < Ny; j++){
+						for (int i = 0; i < Nx; i++){
+							
+							if(bulktype[l] == 1){
+								dir[1] = cos(qch * (i - rx));
+								dir[2] = sin(qch * (i - rx));
+							
+								for(int n = 0; n < 6; n ++){
+									Qold[nd * 6 + n] = dir2ten(dir, n, S);
+								}
+								nd ++;
+							}
+							else if(bulktype[l] == 2 || bulktype[l] == 3){
+								nd++;
+							}
+
+							l++;
+							
+						}
+					}
+                }
+			}
+			//Helicoidal en Y
+			else if(seed == -14489){
+				for(int k = 0; k < Nz; k++){
+					for (int j = 0; j < Ny; j++){
+						for (int i = 0; i < Nx; i++){
+							
+							if(bulktype[l] == 1){
+								dir[0] = cos(qch * (j - ry));
+								dir[2] = sin(qch * (j - ry));
+							
+								for(int n = 0; n < 6; n ++){
+									Qold[nd * 6 + n] = dir2ten(dir, n, S);
+								}
+								nd ++;
+							}
+							else if(bulktype[l] == 2 || bulktype[l] == 3){
+								nd++;
+							}
+
+							l++;
+							
+						}
+					}
+                }
+			}
+
+		}
+	
 	}
 
 	else if(seed == 0){
