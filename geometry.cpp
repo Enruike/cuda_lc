@@ -1784,7 +1784,7 @@ bool not_evolving_shell(){
                     else{
                         drop[l] = true;
 						if(seed == -1442 || seed == -1443 || seed == -1444 || seed == -1445 ||
-						seed == -1446){
+						seed == -1446 || seed == -14487 || seed == -14488 || seed == -14489){
 							bulktype[l] = 3; //para bulk externo.
 						}
 						else{
@@ -1858,10 +1858,20 @@ bool not_evolving_shell(){
 
 	dV = ((4. / 3.) * (double)M_PI * (Rx * Ry * Rz)) / (double)bulk; 
 	dA = (4. * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0/1.6075)) / (double)(surf);
-	dApart = 0;
-	
 
+	if(DoubleU){
+		dVi = ((4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)innerbulk;
+		dVo = ((4.0 / 3.0) * (double)M_PI * ((Rx) * (Ry) * (Rz)) - (4.0 / 3.0) * (double)M_PI * (iRx * iRy * iRz)) / (double)outerbulk;
+	}
+
+	dA = (4.0 * (double)M_PI * pow((pow(Rx * Ry, 1.6075) + pow(Rx * Rz, 1.6075) + pow(Ry * Rz, 1.6075)) / 3.0, 1.0000 / 1.6075)) / (double)surf;
 	printf("\ndV is %lf\ndA of droplet is %lf\ndA of nanoparticle is %lf\n", dV, dA, dApart); 
+
+	if(DoubleU){
+		printf("dVi = %lf\n", dVi);
+		printf("dVo = %lf\n", dVo);
+	}
+
 	droplet = bulk + surf;
 	printf("\nRx is %lf\nRy is %lf\nRz is %lf\nDroplet nodes number is %d\nBulk nodes number is %d\nDroplet surface nodes number is %d\n", Rx, Ry, Rz, droplet, bulk, surf); 
 	
