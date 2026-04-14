@@ -490,6 +490,16 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 						relax_bulk<false, false><<<bulkBlocks, blk_thrds>>>(d_Qold, d_Qnew, d_bulktype, d_neighbor, d_Qtensor_index, d_Qtensor_signal,
 							U, U2, chiral, qch, L1, L2, bulk, idx, idy, idz, iddx, iddy, iddz, dt);
 					}
+				cudaStatus = cudaGetLastError();
+				if (cudaStatus != cudaSuccess) {
+					fprintf(stderr, "relax_bulk launch failed at cycle %d: %s\n", cycle, cudaGetErrorString(cudaStatus));
+					return 0;
+				}
+				cudaStatus = cudaDeviceSynchronize();
+				if (cudaStatus != cudaSuccess) {
+					fprintf(stderr, "relax_bulk execution failed at cycle %d: %s\n", cycle, cudaGetErrorString(cudaStatus));
+					return 0;
+				}
 				double* tmp = d_Qold;
 				d_Qold = d_Qnew;
 				d_Qnew = tmp;
@@ -504,6 +514,16 @@ __global__ void d_checktrace(double* d_Qold, unsigned int droplet){
 				else {
 					relax_surf<false><<<surfBlocks, threads_per_block>>>(d_Qold, d_Qnew, d_neighbor, d_Nvector_index, d_Nvector_signal, d_Qo, chiral, qch, L1, L2, L3, L4,
 						tiltAngle, (surf + nsurf), degenerate, infinite, W, Wp, d_nu, idx, idy, idz, dt, S0);
+				}
+				cudaStatus = cudaGetLastError();
+				if (cudaStatus != cudaSuccess) {
+					fprintf(stderr, "relax_surf launch failed at cycle %d: %s\n", cycle, cudaGetErrorString(cudaStatus));
+					return 0;
+				}
+				cudaStatus = cudaDeviceSynchronize();
+				if (cudaStatus != cudaSuccess) {
+					fprintf(stderr, "relax_surf execution failed at cycle %d: %s\n", cycle, cudaGetErrorString(cudaStatus));
+					return 0;
 				}
 				tmp = d_Qold;
 				d_Qold = d_Qnew;
