@@ -1,4 +1,18 @@
 ﻿#include "read_parameters.hpp"
+#define READ_PARAM_LINE(expected_count, ...)            \
+	do {                                                \
+		char line[512];                                 \
+		if (fgets(line, sizeof(line), param) == NULL) { \
+			fclose(param);                              \
+			printf("Error reading param.in.\n");        \
+			return false;                               \
+		}                                               \
+		if (sscanf(line, __VA_ARGS__) != expected_count) { \
+			fclose(param);                              \
+			printf("Error reading param.in.\n");        \
+			return false;                               \
+		}                                               \
+	} while (0)
 
 bool read_param() {
 	FILE* param = fopen("param.in", "r");
@@ -9,48 +23,48 @@ bool read_param() {
 
 	else {
 
-        fscanf(param, "Nx %d\n", &Nx);
-        fscanf(param, "Ny %d\n", &Ny);
-        fscanf(param, "Nz %d\n", &Nz);
-        fscanf(param, "Lx %lf\n", &Lx);
-        fscanf(param, "Ly %lf\n", &Ly);
-        fscanf(param, "Lz %lf\n", &Lz);
-        fscanf(param, "W %lf\n", &W);
-        fscanf(param, "U %lf\n", &U);
-        fscanf(param, "L1 %lf\n", &L1);
-        fscanf(param, "L2 %lf\n", &L2);
-        fscanf(param, "L3 %lf\n", &L3);
-        fscanf(param, "L4 %lf\n", &L4);
-        fscanf(param, "chiral %d\n", &chiral);
-        fscanf(param, "qch %lf\n", &qch);
-		fscanf(param, "redshift %lf #Default values BPI = 0.71 & BPII = 0.86.\n", &redshift);
-        fscanf(param, "geo %d\n", &geo);
-        fscanf(param, "degenerate %d #1:Planar & 2:Conic\n", &degenerate);
-		fscanf(param, "tiltAngle %lf\n", &tiltAngle);
-        fscanf(param, "infinite %d\n", &infinite);
-        fscanf(param, "Np %d\n", &Np);
-        fscanf(param, "Rp %lf\n", &Rp);
-        fscanf(param, "Wp %lf\n", &Wp);
-        fscanf(param, "seed %d\n", &seed);
-        fscanf(param, "rand_seed %d\n", &rand_seed);
-        fscanf(param, "tmin tmax %lf %lf\n", &tmin, &tmax);
-        fscanf(param, "increment %lf\n", &increment);
-        fscanf(param, "accuracy %lf\n", &accuracy);
-        fscanf(param, "init_dir %lf %lf %lf\n", &init_dir[0], &init_dir[1], &init_dir[2]);
-        fscanf(param, "dir1 %lf %lf %lf\n", &dir1[0], &dir1[1], &dir1[2]);
-        fscanf(param, "dir2 %lf %lf %lf\n", &dir2[0], &dir2[1], &dir2[2]);
-        fscanf(param, "UpperSurface %d\n", &uppersurf);
-        fscanf(param, "LowerSurface %d\n", &lowersurf);
-        fscanf(param, "LowerSurfaceDegen %d\n", &surfdegen);
-        fscanf(param, "DoubleU Mode %d\n", &DoubleU);
-        fscanf(param, "U2 %lf\n", &U2);
-        fscanf(param, "iRx %lf\n", &iRx);
-        fscanf(param, "iRy %lf\n", &iRy);
-        fscanf(param, "iRz %lf\n", &iRz);
-        fscanf(param, "Save Every %d\n", &save_every);
-        fscanf(param, "Check Every %d\n", &check_every);
-		fscanf(param, "Stop At %d #For non-stop condition use 0.\n", &stopat);
-		fscanf(param, "Check Trace At %d\n", &trace_checker);
+		READ_PARAM_LINE(1, "Nx %d", &Nx);
+		READ_PARAM_LINE(1, "Ny %d", &Ny);
+		READ_PARAM_LINE(1, "Nz %d", &Nz);
+		READ_PARAM_LINE(1, "Lx %lf", &Lx);
+		READ_PARAM_LINE(1, "Ly %lf", &Ly);
+		READ_PARAM_LINE(1, "Lz %lf", &Lz);
+		READ_PARAM_LINE(1, "W %lf", &W);
+		READ_PARAM_LINE(1, "U %lf", &U);
+		READ_PARAM_LINE(1, "L1 %lf", &L1);
+		READ_PARAM_LINE(1, "L2 %lf", &L2);
+		READ_PARAM_LINE(1, "L3 %lf", &L3);
+		READ_PARAM_LINE(1, "L4 %lf", &L4);
+		READ_PARAM_LINE(1, "chiral %d", &chiral);
+		READ_PARAM_LINE(1, "qch %lf", &qch);
+		READ_PARAM_LINE(1, "redshift %lf", &redshift);
+		READ_PARAM_LINE(1, "geo %d", &geo);
+		READ_PARAM_LINE(1, "degenerate %d", &degenerate);
+		READ_PARAM_LINE(1, "tiltAngle %lf", &tiltAngle);
+		READ_PARAM_LINE(1, "infinite %d", &infinite);
+		READ_PARAM_LINE(1, "Np %d", &Np);
+		READ_PARAM_LINE(1, "Rp %lf", &Rp);
+		READ_PARAM_LINE(1, "Wp %lf", &Wp);
+		READ_PARAM_LINE(1, "seed %d", &seed);
+		READ_PARAM_LINE(1, "rand_seed %d", &rand_seed);
+		READ_PARAM_LINE(2, "tmin tmax %lf %lf", &tmin, &tmax);
+		READ_PARAM_LINE(1, "increment %lf", &increment);
+		READ_PARAM_LINE(1, "accuracy %lf", &accuracy);
+		READ_PARAM_LINE(3, "init_dir %lf %lf %lf", &init_dir[0], &init_dir[1], &init_dir[2]);
+		READ_PARAM_LINE(3, "dir1 %lf %lf %lf", &dir1[0], &dir1[1], &dir1[2]);
+		READ_PARAM_LINE(3, "dir2 %lf %lf %lf", &dir2[0], &dir2[1], &dir2[2]);
+		READ_PARAM_LINE(1, "UpperSurface %d", &uppersurf);
+		READ_PARAM_LINE(1, "LowerSurface %d", &lowersurf);
+		READ_PARAM_LINE(1, "LowerSurfaceDegen %d", &surfdegen);
+		READ_PARAM_LINE(1, "DoubleU Mode %d", &DoubleU);
+		READ_PARAM_LINE(1, "U2 %lf", &U2);
+		READ_PARAM_LINE(1, "iRx %lf", &iRx);
+		READ_PARAM_LINE(1, "iRy %lf", &iRy);
+		READ_PARAM_LINE(1, "iRz %lf", &iRz);
+		READ_PARAM_LINE(1, "Save Every %d", &save_every);
+		READ_PARAM_LINE(1, "Check Every %d", &check_every);
+		READ_PARAM_LINE(1, "Stop At %d", &stopat);
+		READ_PARAM_LINE(1, "Check Trace At %d", &trace_checker);
 
 		char* status;
 

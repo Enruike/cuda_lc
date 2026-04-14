@@ -23,6 +23,21 @@
 
 #include "geometry.hpp"
 
+#define READ_NANO_LINE(expected_count, ...)             \
+	do {                                                \
+		char line[512];                                 \
+		if (fgets(line, sizeof(line), param) == NULL) { \
+			fclose(param);                              \
+			printf("Error reading nano.in.\n");         \
+			return false;                               \
+		}                                               \
+		if (sscanf(line, __VA_ARGS__) != expected_count) { \
+			fclose(param);                              \
+			printf("Error reading nano.in.\n");         \
+			return false;                               \
+		}                                               \
+	} while (0)
+
 bool read_nano(){
 
 	FILE* param = fopen("nano.in", "r");
@@ -32,20 +47,20 @@ bool read_nano(){
 		return false;
 	}
 
-    fscanf(param, "pRx %d #size of nanoparticle\n", &pRx);
-    fscanf(param, "pRy %d\n", &pRy);
-    fscanf(param, "pRz %d\n", &pRz);
-    fscanf(param, "pU %lf #U for the interface layer\n", &pU);
-    fscanf(param, "alpha %lf #Angles for rotate or tilt the nano particle\n", &alpha);
-    fscanf(param, "beta %lf\n", &beta);
-    fscanf(param, "gamma %lf\n", &gama);
-    fscanf(param, "interface %d #thickness of the interface layer; 0: no interface\n", &interface);
-    fscanf(param, "anchoring %d #0:random 1:homeotropic 2:planar\n", &anchoring);
-	fscanf(param, "degenerate %d	#0:No 1:Planar degenerate 2:Conic degenerate\n", &pdegenerate);
-    fscanf(param, "posX %d #0 for center; nanoparticle position\n", &posX);
-    fscanf(param, "posY %d\n", &posY);
-    fscanf(param, "posZ %d\n", &posZ);
-    fscanf(param, "pivot %d\n #0:center; 1:edge", &pivotflag);
+	READ_NANO_LINE(1, "pRx %d", &pRx);
+	READ_NANO_LINE(1, "pRy %d", &pRy);
+	READ_NANO_LINE(1, "pRz %d", &pRz);
+	READ_NANO_LINE(1, "pU %lf", &pU);
+	READ_NANO_LINE(1, "alpha %lf", &alpha);
+	READ_NANO_LINE(1, "beta %lf", &beta);
+	READ_NANO_LINE(1, "gamma %lf", &gama);
+	READ_NANO_LINE(1, "interface %d", &interface);
+	READ_NANO_LINE(1, "anchoring %d", &anchoring);
+	READ_NANO_LINE(1, "degenerate %d", &pdegenerate);
+	READ_NANO_LINE(1, "posX %d", &posX);
+	READ_NANO_LINE(1, "posY %d", &posY);
+	READ_NANO_LINE(1, "posZ %d", &posZ);
+	READ_NANO_LINE(1, "pivot %d", &pivotflag);
 
     if(pivotflag == 0 && (posX != 0 || posY != 0 || posZ != 0)){
         printf("Pivot flag it's set up for 0:center\n");

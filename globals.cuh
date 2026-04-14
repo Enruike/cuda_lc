@@ -7,7 +7,7 @@
 #define _USE_MATH_DEFINES
 #include <math.h>
 #include <iostream>
-#include "relaxations.cuh"
+#include "solver_kernels.cuh"
 
 //Definiendo variables
 extern double dE;
@@ -53,6 +53,7 @@ extern unsigned int bulk, surf, nsurf;
 extern double iRx, iRy, iRz, Rx, Ry, Rz;
 extern int rx, ry, rz;
 extern int save_every, check_every, stopat;
+extern int trace_checker;
 extern double dx, dy, dz;
 extern double idx, idy, idz, iddx, iddy, iddz;
 extern int pRx, pRy, pRz, interface;
@@ -74,8 +75,15 @@ extern unsigned char* bulktype;
 
 //device variables
 extern double* d_Qold;
+extern double* d_Qnew;
 extern unsigned char* d_bulktype;
 extern signed char* d_signal;
+extern double* d_Qo;
+extern int* d_neighbor;
+extern unsigned int* d_Qtensor_index;
+extern unsigned int* d_Nvector_index;
+extern unsigned char* d_Qtensor_signal;
+extern unsigned char* d_Nvector_signal;
 
 extern double* d_nu;
 

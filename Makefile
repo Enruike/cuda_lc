@@ -1,45 +1,47 @@
-#37 for K80 GPUs and 75 for Turing architecture GPUs
-ARCH = 75
-OBJS = configurations.o energy.o functions.o initial.o read_parameters.o relaxations.o kernel.o geometry.o
-OBJ = energy.o geometry.o functions.o
-FILES = configurations.cu initial.cpp kernel.cu read_parameters.cpp relaxations.cu
-HEADERS = definitions.cuh relaxations.cuh geometry.hpp initial.hpp read_parameters.hpp
+# Auto-detect GPU compute capability via nvidia-smi, fallback to Ada (89).
+DETECTED_ARCH := $(shell nvidia-smi --query-gpu=compute_cap --format=csv,noheader 2>/dev/null | grep -Eo '[0-9]+\.[0-9]+' | head -n 1 | tr -d '.')
+ARCH ?= $(if $(DETECTED_ARCH),$(DETECTED_ARCH),89)
+OBJS = configurations.o energy.o functions.o initial.o read_parameters.o solver_bulk.o solver_surface.o main.o geometry.o
+HEADERS = globals.cuh solver_kernels.cuh solver_common.cuh geometry.hpp initial.hpp read_parameters.hpp
 NO_ARCH_WARNING = -Wno-deprecated-gpu-targets
 
 all: lc_cuda.x
 
-lc_cuda.x: $(FILES) $(HEADERS) $(OBJ)
-	nvcc -O3 -w --fmad=true -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(FILES) $(OBJ)
+lc_cuda.x: $(OBJS)
+	nvcc -O3 -w --fmad=true -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -o lc_cuda.x $(OBJS)
 
-#configurations.o: configurations.cu definitions.cuh
-#	nvcc -c configurations.cu
+configurations.o: configurations.cu $(HEADERS)
+	nvcc -O3 -w --fmad=true -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -c configurations.cu
 
 #ellipsoid.o: ellipsoid.cpp geometry.hpp
 #	nvcc -c ellipsoid.cpp
 
 energy.o: energy.cpp energy.hpp
-	nvcc -c energy.cpp
+	nvcc -O3 -w --fmad=true -x cu -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -c energy.cpp
 
 #nanochannel.o: nanochannel.cpp geometry.hpp
 #	nvcc -c nanochannel.cpp
 
 geometry.o: geometry.cpp geometry.hpp
-	nvcc -c geometry.cpp
+	nvcc -O3 -w --fmad=true -c geometry.cpp
 
 functions.o: functions.cpp functions.hpp
-	nvcc -c functions.cpp
+	nvcc -O3 -w --fmad=true -c functions.cpp
 
-# initial.o: initial.cpp initial.hpp
-# 	nvcc -c initial.cpp
+initial.o: initial.cpp initial.hpp $(HEADERS)
+	nvcc -O3 -w --fmad=true -c initial.cpp
 
-# read_parameters.o: read_parameters.cpp read_parameters.hpp
-# 	nvcc -c read_parameters.cpp
+read_parameters.o: read_parameters.cpp read_parameters.hpp $(HEADERS)
+	nvcc -O3 -w --fmad=true -c read_parameters.cpp
 
-# relaxations.o: relaxations.cu definitions.cuh
-# 	nvcc -c relaxations.cu
+solver_bulk.o: solver_bulk.cu globals.cuh solver_kernels.cuh solver_common.cuh
+	nvcc -O3 -w --fmad=true -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -c solver_bulk.cu
 
-# kernel.o: kernel.cu definitions.cuh
-# 	nvcc -c kernel.cu
+solver_surface.o: solver_surface.cu globals.cuh solver_kernels.cuh solver_common.cuh
+	nvcc -O3 -w --fmad=true -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -c solver_surface.cu
+
+main.o: main.cpp globals.cuh solver_kernels.cuh
+	nvcc -O3 -w --fmad=true -x cu -gencode=arch=compute_$(ARCH),code=sm_$(ARCH) $(NO_ARCH_WARNING) -c main.cpp
 
 clean:
 	rm -f lc_cuda.x $(OBJS)

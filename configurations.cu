@@ -1,4 +1,4 @@
-#include "definitions.cuh"
+#include "globals.cuh"
 
 int l = 0;
 int nd = 0;
