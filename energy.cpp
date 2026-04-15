@@ -765,6 +765,7 @@ void surface_energy(double ans[2]) {
 	double loc_nu[3] = { 0 };
 	int degen = 0, inf = 1;
 	double Wstr = 0.;
+	double area = 0.;
 	bool npboundary = true;
 #if DEBUG_CHANNEL_SURF_TRACE
 	double best_contrib = -1.;
@@ -782,7 +783,7 @@ void surface_energy(double ans[2]) {
 				degen = degenerate;
 				inf = infinite;
 				Wstr = W;
-				dA = dA;
+				area = dA;
 				npboundary = false;
 			}
 			//Para superficie inferior degenerada.
@@ -790,7 +791,7 @@ void surface_energy(double ans[2]) {
 				degen = 1;
 				inf = infinite;
 				Wstr = W;
-				dA = dA;
+				area = dA;
 				npboundary = false;
 			}
 
@@ -799,35 +800,35 @@ void surface_energy(double ans[2]) {
 				degen = 0;
 				inf = 0;
 				Wstr = Wp;
-				dA = dApart;
+				area = dApart;
 				npboundary = true;
 			}
 			else if (signal[i] == 6 || signal[i] == 7) {
 				degen = 1;
 				inf = 0;
 				Wstr = Wp;
-				dA = dApart;
+				area = dApart;
 				npboundary = true;
 			}
 			else if (signal[i] == 20 || signal[i] == 21) {
 				degen = 1;
 				inf = 0;
 				Wstr = Wp;
-				dA = dApart;
+				area = dApart;
 				npboundary = true;
 			}
 			else if (signal[i] == 22 || signal[i] == 23) {
 				degen = 2;
 				inf = 0;
 				Wstr = Wp;
-				dA = dApart;
+				area = dApart;
 				npboundary = true;
 			}
 			else if (signal[i] == 8) {
 				degen = 0;
 				inf = 1;
 				Wstr = Wp;
-				dA = dApart;
+				area = dApart;
 				npboundary = true;
 			}
 			// else {
@@ -845,7 +846,7 @@ void surface_energy(double ans[2]) {
 						ans[1] += Wstr * trqq(Qdiff) * dApart;
 					}
 					else {
-						const double contrib = Wstr * trqq(Qdiff) * dA;
+						const double contrib = Wstr * trqq(Qdiff) * area;
 						ans[0] += contrib;
 #if DEBUG_CHANNEL_SURF_TRACE
 						if (contrib > best_contrib) {
@@ -886,7 +887,7 @@ void surface_energy(double ans[2]) {
 							ans[1] += Wstr * trqq(Qdiff) * dApart;
 						}
 						else {
-							const double contrib = Wstr * trqq(Qdiff) * dA;
+							const double contrib = Wstr * trqq(Qdiff) * area;
 							ans[0] += contrib;
 #if DEBUG_CHANNEL_SURF_TRACE
 							if (contrib > best_contrib) {
