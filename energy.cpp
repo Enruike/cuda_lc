@@ -6,6 +6,10 @@
 #define DEBUG_ENERGY_COMPARE 0
 #endif
 
+#ifndef DEBUG_CHANNEL_SURF_TRACE
+#define DEBUG_CHANNEL_SURF_TRACE 0
+#endif
+
 extern unsigned int bulk, surf, nsurf;
 extern double* d_Qold;
 extern unsigned char* d_bulktype;
@@ -762,6 +766,7 @@ void surface_energy(double ans[2]) {
 	int degen = 0, inf = 1;
 	double Wstr = 0.;
 	bool npboundary = true;
+	bool traced_channel = false;
 
 	for (int i = 0; i < droplet; i++) {
 		if ((signal[i] >= 2 && signal[i] <= 8) || signal[i] == 12 || signal[i] == 13 || (signal[i] >= 20 && signal[i] <= 23)) {
@@ -834,6 +839,17 @@ void surface_energy(double ans[2]) {
 					}
 					else {
 						ans[0] += Wstr * trqq(Qdiff) * dA;
+#if DEBUG_CHANNEL_SURF_TRACE
+						if (!traced_channel && cycle % check_every == 0) {
+							printf("[surf trace cuda] cycle %d i=%d nb=%d sig=%u degen=%d W=%0.12lf trqq=%0.12lf contrib=%0.12lf\n",
+								cycle, i, nb, signal[i], degen, Wstr, trqq(Qdiff), Wstr * trqq(Qdiff) * dA);
+							printf("[surf trace cuda] nu=(%0.12lf,%0.12lf,%0.12lf) Qin=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+								loc_nu[0], loc_nu[1], loc_nu[2], Qin[0], Qin[1], Qin[2], Qin[3], Qin[4], Qin[5]);
+							printf("[surf trace cuda] Qdiff=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+								Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]);
+							traced_channel = true;
+						}
+#endif
 					}
 
 				}
