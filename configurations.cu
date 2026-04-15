@@ -509,35 +509,21 @@ bool conf() {
 					for(int i = 0; i < Nx; i++){
 						if(drop[l] || boundary[l] || nboundary[l]){
 							
-							if(bulktype[l] == 3){
-								
-								//Modified condition for negative direcctions.
-								dir_temp[0] = (rand() % (pRx + interface) - pRx - interface);
-								dir_temp[1] = (rand() % (pRy + interface) - pRy - interface);
-								dir_temp[2] = (rand() % (pRz + interface) - pRz - interface);
-								/* original condition for positive numbers 
-								
-								dir_temp[0] = (rand() % (pRx + interface) + 1);
-								dir_temp[1] = (rand() % (pRy + interface) + 1);
-								dir_temp[2] = (rand() % (pRz + interface) + 1);
-								
-								*/
+								if(bulktype[l] == 3){
+									bool flag = false;
+									do{
+										// Match MPI: sample the full symmetric interval and reject zero vectors.
+										dir_temp[0] = rand() % (2 * pRx + 2 * interface) - pRx - interface;
+										dir_temp[1] = rand() % (2 * pRy + 2 * interface) - pRy - interface;
+										dir_temp[2] = rand() % (2 * pRz + 2 * interface) - pRz - interface;
+										flag = norm_v(dir_temp);
+									}
+									while(!flag);
 
-								/* if(tempcounter < 50) {
-									printf("Vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
 									
-								} */
-								
-								if(!norm_v(dir_temp)){
-									printf("Problems with random directions!\n");
-									printf("Problematic vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
-									exit(1);
-								}
-
-								
-							/* 	if(tempcounter < 50) {
-									printf("Norm vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
-									tempcounter++;
+								/* 	if(tempcounter < 50) {
+										printf("Norm vector is x:%lf y:%lf z:%lf\n", dir_temp[0], dir_temp[1], dir_temp[2]);
+										tempcounter++;
 								} */
 
 								Qold[nd * 6 + 0] = dir2ten(dir_temp, 0, S2);

@@ -156,20 +156,7 @@ __global__ void relax_bulk(const double* d_Qin_old, double* d_Qout, unsigned cha
 		double qelas2_4 = 0.;
 		double qelas2_5 = 0.;
 
-		if(UseL2 && Q_signal == 0){
-			const int xpyp = d_neighbor[xp * 6 + 3];
-			const int xpym = d_neighbor[xp * 6 + 2];
-			const int xmyp = d_neighbor[xm * 6 + 3];
-			const int xmym = d_neighbor[xm * 6 + 2];
-			const int xpzp = d_neighbor[xp * 6 + 5];
-			const int xpzm = d_neighbor[xp * 6 + 4];
-			const int xmzp = d_neighbor[xm * 6 + 5];
-			const int xmzm = d_neighbor[xm * 6 + 4];
-			const int ypzp = d_neighbor[yp * 6 + 5];
-			const int ypzm = d_neighbor[yp * 6 + 4];
-			const int ymzp = d_neighbor[ym * 6 + 5];
-			const int ymzm = d_neighbor[ym * 6 + 4];
-
+		if(UseL2){
 			const double dxx0 = (d_Qin_old[xp * 6 + 0] + d_Qin_old[xm * 6 + 0] - 2. * Qin[0]) * iddx;
 			const double dxx1 = (d_Qin_old[xp * 6 + 1] + d_Qin_old[xm * 6 + 1] - 2. * Qin[1]) * iddx;
 			const double dxx2 = (d_Qin_old[xp * 6 + 2] + d_Qin_old[xm * 6 + 2] - 2. * Qin[2]) * iddx;
@@ -180,23 +167,56 @@ __global__ void relax_bulk(const double* d_Qin_old, double* d_Qout, unsigned cha
 			const double dzz4 = (d_Qin_old[zp * 6 + 4] + d_Qin_old[zm * 6 + 4] - 2. * Qin[4]) * iddz;
 			const double dzz5 = (d_Qin_old[zp * 6 + 5] + d_Qin_old[zm * 6 + 5] - 2. * Qin[5]) * iddz;
 
-			const double dxy0 = (d_Qin_old[xpyp * 6 + 0] + d_Qin_old[xmym * 6 + 0] - d_Qin_old[xmyp * 6 + 0] - d_Qin_old[xpym * 6 + 0]) * idx * idy * 0.25;
-			const double dxz0 = (d_Qin_old[xpzp * 6 + 0] + d_Qin_old[xmzm * 6 + 0] - d_Qin_old[xmzp * 6 + 0] - d_Qin_old[xpzm * 6 + 0]) * idx * idz * 0.25;
-			const double dxy1 = (d_Qin_old[xpyp * 6 + 1] + d_Qin_old[xmym * 6 + 1] - d_Qin_old[xmyp * 6 + 1] - d_Qin_old[xpym * 6 + 1]) * idx * idy * 0.25;
-			const double dxz1 = (d_Qin_old[xpzp * 6 + 1] + d_Qin_old[xmzm * 6 + 1] - d_Qin_old[xmzp * 6 + 1] - d_Qin_old[xpzm * 6 + 1]) * idx * idz * 0.25;
-			const double dyz1 = (d_Qin_old[ypzp * 6 + 1] + d_Qin_old[ymzm * 6 + 1] - d_Qin_old[ymzp * 6 + 1] - d_Qin_old[ypzm * 6 + 1]) * idy * idz * 0.25;
-			const double dxy2 = (d_Qin_old[xpyp * 6 + 2] + d_Qin_old[xmym * 6 + 2] - d_Qin_old[xmyp * 6 + 2] - d_Qin_old[xpym * 6 + 2]) * idx * idy * 0.25;
-			const double dxz2 = (d_Qin_old[xpzp * 6 + 2] + d_Qin_old[xmzm * 6 + 2] - d_Qin_old[xmzp * 6 + 2] - d_Qin_old[xpzm * 6 + 2]) * idx * idz * 0.25;
-			const double dyz2 = (d_Qin_old[ypzp * 6 + 2] + d_Qin_old[ymzm * 6 + 2] - d_Qin_old[ymzp * 6 + 2] - d_Qin_old[ypzm * 6 + 2]) * idy * idz * 0.25;
-			const double dxy3 = (d_Qin_old[xpyp * 6 + 3] + d_Qin_old[xmym * 6 + 3] - d_Qin_old[xmyp * 6 + 3] - d_Qin_old[xpym * 6 + 3]) * idx * idy * 0.25;
-			const double dxz3 = (d_Qin_old[xpzp * 6 + 3] + d_Qin_old[xmzm * 6 + 3] - d_Qin_old[xmzp * 6 + 3] - d_Qin_old[xpzm * 6 + 3]) * idx * idz * 0.25;
-			const double dyz3 = (d_Qin_old[ypzp * 6 + 3] + d_Qin_old[ymzm * 6 + 3] - d_Qin_old[ymzp * 6 + 3] - d_Qin_old[ypzm * 6 + 3]) * idy * idz * 0.25;
-			const double dxy4 = (d_Qin_old[xpyp * 6 + 4] + d_Qin_old[xmym * 6 + 4] - d_Qin_old[xmyp * 6 + 4] - d_Qin_old[xpym * 6 + 4]) * idx * idy * 0.25;
-			const double dxz4 = (d_Qin_old[xpzp * 6 + 4] + d_Qin_old[xmzm * 6 + 4] - d_Qin_old[xmzp * 6 + 4] - d_Qin_old[xpzm * 6 + 4]) * idx * idz * 0.25;
-			const double dyz4 = (d_Qin_old[ypzp * 6 + 4] + d_Qin_old[ymzm * 6 + 4] - d_Qin_old[ymzp * 6 + 4] - d_Qin_old[ypzm * 6 + 4]) * idy * idz * 0.25;
-			const double dxy5 = (d_Qin_old[xpyp * 6 + 5] + d_Qin_old[xmym * 6 + 5] - d_Qin_old[xmyp * 6 + 5] - d_Qin_old[xpym * 6 + 5]) * idx * idy * 0.25;
-			const double dxz5 = (d_Qin_old[xpzp * 6 + 5] + d_Qin_old[xmzm * 6 + 5] - d_Qin_old[xmzp * 6 + 5] - d_Qin_old[xpzm * 6 + 5]) * idx * idz * 0.25;
-			const double dyz5 = (d_Qin_old[ypzp * 6 + 5] + d_Qin_old[ymzm * 6 + 5] - d_Qin_old[ymzp * 6 + 5] - d_Qin_old[ypzm * 6 + 5]) * idy * idz * 0.25;
+			double dxy0 = 0.;
+			double dxz0 = 0.;
+			double dxy1 = 0.;
+			double dxz1 = 0.;
+			double dyz1 = 0.;
+			double dxy2 = 0.;
+			double dxz2 = 0.;
+			double dyz2 = 0.;
+			double dxy3 = 0.;
+			double dxz3 = 0.;
+			double dyz3 = 0.;
+			double dxy4 = 0.;
+			double dxz4 = 0.;
+			double dyz4 = 0.;
+			double dxy5 = 0.;
+			double dxz5 = 0.;
+			double dyz5 = 0.;
+
+			if(Q_signal == 0){
+				const int xpyp = d_neighbor[xp * 6 + 3];
+				const int xpym = d_neighbor[xp * 6 + 2];
+				const int xmyp = d_neighbor[xm * 6 + 3];
+				const int xmym = d_neighbor[xm * 6 + 2];
+				const int xpzp = d_neighbor[xp * 6 + 5];
+				const int xpzm = d_neighbor[xp * 6 + 4];
+				const int xmzp = d_neighbor[xm * 6 + 5];
+				const int xmzm = d_neighbor[xm * 6 + 4];
+				const int ypzp = d_neighbor[yp * 6 + 5];
+				const int ypzm = d_neighbor[yp * 6 + 4];
+				const int ymzp = d_neighbor[ym * 6 + 5];
+				const int ymzm = d_neighbor[ym * 6 + 4];
+
+				dxy0 = (d_Qin_old[xpyp * 6 + 0] + d_Qin_old[xmym * 6 + 0] - d_Qin_old[xmyp * 6 + 0] - d_Qin_old[xpym * 6 + 0]) * idx * idy * 0.25;
+				dxz0 = (d_Qin_old[xpzp * 6 + 0] + d_Qin_old[xmzm * 6 + 0] - d_Qin_old[xmzp * 6 + 0] - d_Qin_old[xpzm * 6 + 0]) * idx * idz * 0.25;
+				dxy1 = (d_Qin_old[xpyp * 6 + 1] + d_Qin_old[xmym * 6 + 1] - d_Qin_old[xmyp * 6 + 1] - d_Qin_old[xpym * 6 + 1]) * idx * idy * 0.25;
+				dxz1 = (d_Qin_old[xpzp * 6 + 1] + d_Qin_old[xmzm * 6 + 1] - d_Qin_old[xmzp * 6 + 1] - d_Qin_old[xpzm * 6 + 1]) * idx * idz * 0.25;
+				dyz1 = (d_Qin_old[ypzp * 6 + 1] + d_Qin_old[ymzm * 6 + 1] - d_Qin_old[ymzp * 6 + 1] - d_Qin_old[ypzm * 6 + 1]) * idy * idz * 0.25;
+				dxy2 = (d_Qin_old[xpyp * 6 + 2] + d_Qin_old[xmym * 6 + 2] - d_Qin_old[xmyp * 6 + 2] - d_Qin_old[xpym * 6 + 2]) * idx * idy * 0.25;
+				dxz2 = (d_Qin_old[xpzp * 6 + 2] + d_Qin_old[xmzm * 6 + 2] - d_Qin_old[xmzp * 6 + 2] - d_Qin_old[xpzm * 6 + 2]) * idx * idz * 0.25;
+				dyz2 = (d_Qin_old[ypzp * 6 + 2] + d_Qin_old[ymzm * 6 + 2] - d_Qin_old[ymzp * 6 + 2] - d_Qin_old[ypzm * 6 + 2]) * idy * idz * 0.25;
+				dxy3 = (d_Qin_old[xpyp * 6 + 3] + d_Qin_old[xmym * 6 + 3] - d_Qin_old[xmyp * 6 + 3] - d_Qin_old[xpym * 6 + 3]) * idx * idy * 0.25;
+				dxz3 = (d_Qin_old[xpzp * 6 + 3] + d_Qin_old[xmzm * 6 + 3] - d_Qin_old[xmzp * 6 + 3] - d_Qin_old[xpzm * 6 + 3]) * idx * idz * 0.25;
+				dyz3 = (d_Qin_old[ypzp * 6 + 3] + d_Qin_old[ymzm * 6 + 3] - d_Qin_old[ymzp * 6 + 3] - d_Qin_old[ypzm * 6 + 3]) * idy * idz * 0.25;
+				dxy4 = (d_Qin_old[xpyp * 6 + 4] + d_Qin_old[xmym * 6 + 4] - d_Qin_old[xmyp * 6 + 4] - d_Qin_old[xpym * 6 + 4]) * idx * idy * 0.25;
+				dxz4 = (d_Qin_old[xpzp * 6 + 4] + d_Qin_old[xmzm * 6 + 4] - d_Qin_old[xmzp * 6 + 4] - d_Qin_old[xpzm * 6 + 4]) * idx * idz * 0.25;
+				dyz4 = (d_Qin_old[ypzp * 6 + 4] + d_Qin_old[ymzm * 6 + 4] - d_Qin_old[ymzp * 6 + 4] - d_Qin_old[ypzm * 6 + 4]) * idy * idz * 0.25;
+				dxy5 = (d_Qin_old[xpyp * 6 + 5] + d_Qin_old[xmym * 6 + 5] - d_Qin_old[xmyp * 6 + 5] - d_Qin_old[xpym * 6 + 5]) * idx * idy * 0.25;
+				dxz5 = (d_Qin_old[xpzp * 6 + 5] + d_Qin_old[xmzm * 6 + 5] - d_Qin_old[xmzp * 6 + 5] - d_Qin_old[xpzm * 6 + 5]) * idx * idz * 0.25;
+				dyz5 = (d_Qin_old[ypzp * 6 + 5] + d_Qin_old[ymzm * 6 + 5] - d_Qin_old[ymzp * 6 + 5] - d_Qin_old[ypzm * 6 + 5]) * idy * idz * 0.25;
+			}
 
 			qelas2_0 = dxx0 + dxy1 + dxz2;
 			qelas2_1 = 0.5 * (dxy0 + dxx1 + dxy3 + dyy1 + dxz4 + dyz2);
