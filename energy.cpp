@@ -865,17 +865,28 @@ void surface_energy(double ans[2]) {
 						ans[0] += Wstr * trqq(Qdiff) * dA;
 					}
 				}
-				else if (degen == 0 && inf == 0) {
-					for (int n = 0; n < 6; n++) {
-						Qdiff[n] = Qold[i * 6 + n] - Qo[nb * 6 + n];
+					else if (degen == 0 && inf == 0) {
+						for (int n = 0; n < 6; n++) {
+							Qdiff[n] = Qold[i * 6 + n] - Qo[nb * 6 + n];
+						}
+						if (npboundary) {
+							ans[1] += Wstr * trqq(Qdiff) * dApart;
+						}
+						else {
+							ans[0] += Wstr * trqq(Qdiff) * dA;
+#if DEBUG_CHANNEL_SURF_TRACE
+							if (!traced_channel && cycle % check_every == 0) {
+								printf("[surf trace cuda] cycle %d i=%d nb=%d sig=%u degen=%d W=%0.12lf trqq=%0.12lf contrib=%0.12lf\n",
+									cycle, i, nb, signal[i], degen, Wstr, trqq(Qdiff), Wstr * trqq(Qdiff) * dA);
+								printf("[surf trace cuda] nu=(%0.12lf,%0.12lf,%0.12lf) Qin=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+									loc_nu[0], loc_nu[1], loc_nu[2], Qold[i * 6 + 0], Qold[i * 6 + 1], Qold[i * 6 + 2], Qold[i * 6 + 3], Qold[i * 6 + 4], Qold[i * 6 + 5]);
+								printf("[surf trace cuda] Qdiff=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+									Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]);
+								traced_channel = true;
+							}
+#endif
+						}
 					}
-					if (npboundary) {
-						ans[1] += Wstr * trqq(Qdiff) * dApart;
-					}
-					else {
-						ans[0] += Wstr * trqq(Qdiff) * dA;
-					}
-				}
 			}
 			nb++;
 		}
