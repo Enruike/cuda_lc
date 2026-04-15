@@ -766,7 +766,14 @@ void surface_energy(double ans[2]) {
 	int degen = 0, inf = 1;
 	double Wstr = 0.;
 	bool npboundary = true;
-	bool traced_channel = false;
+#if DEBUG_CHANNEL_SURF_TRACE
+	double best_contrib = -1.;
+	int best_i = -1, best_nb = -1, best_sig = -1, best_degen = -1;
+	double best_W = 0., best_trqq = 0.;
+	double best_nu[3] = {0.};
+	double best_Qin[6] = {0.};
+	double best_Qdiff[6] = {0.};
+#endif
 
 	for (int i = 0; i < droplet; i++) {
 		if ((signal[i] >= 2 && signal[i] <= 8) || signal[i] == 12 || signal[i] == 13 || (signal[i] >= 20 && signal[i] <= 23)) {
@@ -838,16 +845,22 @@ void surface_energy(double ans[2]) {
 						ans[1] += Wstr * trqq(Qdiff) * dApart;
 					}
 					else {
-						ans[0] += Wstr * trqq(Qdiff) * dA;
+						const double contrib = Wstr * trqq(Qdiff) * dA;
+						ans[0] += contrib;
 #if DEBUG_CHANNEL_SURF_TRACE
-						if (!traced_channel && cycle % check_every == 0) {
-							printf("[surf trace cuda] cycle %d i=%d nb=%d sig=%u degen=%d W=%0.12lf trqq=%0.12lf contrib=%0.12lf\n",
-								cycle, i, nb, signal[i], degen, Wstr, trqq(Qdiff), Wstr * trqq(Qdiff) * dA);
-							printf("[surf trace cuda] nu=(%0.12lf,%0.12lf,%0.12lf) Qin=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
-								loc_nu[0], loc_nu[1], loc_nu[2], Qin[0], Qin[1], Qin[2], Qin[3], Qin[4], Qin[5]);
-							printf("[surf trace cuda] Qdiff=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
-								Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]);
-							traced_channel = true;
+						if (contrib > best_contrib) {
+							best_contrib = contrib;
+							best_i = i;
+							best_nb = nb;
+							best_sig = signal[i];
+							best_degen = degen;
+							best_W = Wstr;
+							best_trqq = trqq(Qdiff);
+							for (int n = 0; n < 3; n++) best_nu[n] = loc_nu[n];
+							for (int n = 0; n < 6; n++) {
+								best_Qin[n] = Qin[n];
+								best_Qdiff[n] = Qdiff[n];
+							}
 						}
 #endif
 					}
@@ -873,16 +886,25 @@ void surface_energy(double ans[2]) {
 							ans[1] += Wstr * trqq(Qdiff) * dApart;
 						}
 						else {
-							ans[0] += Wstr * trqq(Qdiff) * dA;
+							const double contrib = Wstr * trqq(Qdiff) * dA;
+							ans[0] += contrib;
 #if DEBUG_CHANNEL_SURF_TRACE
-							if (!traced_channel && cycle % check_every == 0) {
-								printf("[surf trace cuda] cycle %d i=%d nb=%d sig=%u degen=%d W=%0.12lf trqq=%0.12lf contrib=%0.12lf\n",
-									cycle, i, nb, signal[i], degen, Wstr, trqq(Qdiff), Wstr * trqq(Qdiff) * dA);
-								printf("[surf trace cuda] nu=(%0.12lf,%0.12lf,%0.12lf) Qin=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
-									loc_nu[0], loc_nu[1], loc_nu[2], Qold[i * 6 + 0], Qold[i * 6 + 1], Qold[i * 6 + 2], Qold[i * 6 + 3], Qold[i * 6 + 4], Qold[i * 6 + 5]);
-								printf("[surf trace cuda] Qdiff=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
-									Qdiff[0], Qdiff[1], Qdiff[2], Qdiff[3], Qdiff[4], Qdiff[5]);
-								traced_channel = true;
+							if (contrib > best_contrib) {
+								best_contrib = contrib;
+								best_i = i;
+								best_nb = nb;
+								best_sig = signal[i];
+								best_degen = degen;
+								best_W = Wstr;
+								best_trqq = trqq(Qdiff);
+								for (int n = 0; n < 3; n++) best_nu[n] = loc_nu[n];
+								best_Qin[0] = Qold[i * 6 + 0];
+								best_Qin[1] = Qold[i * 6 + 1];
+								best_Qin[2] = Qold[i * 6 + 2];
+								best_Qin[3] = Qold[i * 6 + 3];
+								best_Qin[4] = Qold[i * 6 + 4];
+								best_Qin[5] = Qold[i * 6 + 5];
+								for (int n = 0; n < 6; n++) best_Qdiff[n] = Qdiff[n];
 							}
 #endif
 						}
@@ -891,6 +913,16 @@ void surface_energy(double ans[2]) {
 			nb++;
 		}
 	}
+#if DEBUG_CHANNEL_SURF_TRACE
+	if (cycle % check_every == 0 && best_i >= 0) {
+		printf("[surf trace cuda] cycle %d i=%d nb=%d sig=%d degen=%d W=%0.12lf trqq=%0.12lf contrib=%0.12lf\n",
+			cycle, best_i, best_nb, best_sig, best_degen, best_W, best_trqq, best_contrib);
+		printf("[surf trace cuda] nu=(%0.12lf,%0.12lf,%0.12lf) Qin=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+			best_nu[0], best_nu[1], best_nu[2], best_Qin[0], best_Qin[1], best_Qin[2], best_Qin[3], best_Qin[4], best_Qin[5]);
+		printf("[surf trace cuda] Qdiff=(%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf,%0.12lf)\n",
+			best_Qdiff[0], best_Qdiff[1], best_Qdiff[2], best_Qdiff[3], best_Qdiff[4], best_Qdiff[5]);
+	}
+#endif
 }
 
 void en_degen(double* Qin, double* loc_nu, double* Qdiff){
