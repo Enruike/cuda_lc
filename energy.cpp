@@ -43,6 +43,10 @@ enum EnergyTermIndex {
 };
 
 double* d_energy_terms = nullptr;
+double* d_bulk_block_terms = nullptr;
+double* d_surf_block_terms = nullptr;
+unsigned int cached_bulk_blocks = 0;
+unsigned int cached_surf_blocks = 0;
 
 __device__ void reduce_block_terms(double* shared_terms, unsigned int tid, unsigned int block_size) {
 	for (unsigned int offset = block_size / 2; offset > 0; offset >>= 1) {
@@ -56,10 +60,10 @@ __device__ void reduce_block_terms(double* shared_terms, unsigned int tid, unsig
 	__syncthreads();
 }
 
-__device__ void flush_block_terms(double* energy_terms, double* shared_terms, unsigned int tid) {
+__device__ void flush_block_terms(double* block_terms, double* shared_terms, unsigned int tid) {
 	if (tid == 0) {
 		for (int term = 0; term < ENERGY_TERMS_COUNT; term++) {
-			atomicAdd(&energy_terms[term], shared_terms[term]);
+			block_terms[blockIdx.x * ENERGY_TERMS_COUNT + term] = shared_terms[term];
 		}
 	}
 }
@@ -160,7 +164,7 @@ __device__ void en_conic_dev(const double Qin[6], const double loc_nu[3], double
 	Qdiff[5] = Qp[2][2] - cosTiltAngleSq * S0_val * ptemp[2][2];
 }
 
-__global__ void bulk_energy_kernel(double* energy_terms, const double* d_Qold, const unsigned char* d_bulktype,
+__global__ void bulk_energy_kernel(double* block_terms, const double* d_Qold, const unsigned char* d_bulktype,
 	const int* d_neighbor, const unsigned int* d_Qtensor_index, unsigned int bulk, int chiral, double U, double U2,
 	double idx, double idy, double idz) {
 	extern __shared__ double shared_terms[];
@@ -239,10 +243,10 @@ __global__ void bulk_energy_kernel(double* energy_terms, const double* d_Qold, c
 	}
 
 	reduce_block_terms(shared_terms, tid, blockDim.x);
-	flush_block_terms(energy_terms, shared_terms, tid);
+	flush_block_terms(block_terms, shared_terms, tid);
 }
 
-__global__ void surface_energy_kernel(double* energy_terms, const double* d_Qold, const unsigned char* d_Nvector_signal,
+__global__ void surface_energy_kernel(double* block_terms, const double* d_Qold, const unsigned char* d_Nvector_signal,
 	const unsigned int* d_Nvector_index, const double* d_Qo, const double* d_nu, unsigned int surface_nodes,
 	int degenerate, int infinite, double W, double Wp, double dA, double dApart, double S0_val, double tiltAngleVal) {
 	extern __shared__ double shared_terms[];
@@ -333,7 +337,7 @@ __global__ void surface_energy_kernel(double* energy_terms, const double* d_Qold
 	}
 
 	reduce_block_terms(shared_terms, tid, blockDim.x);
-	flush_block_terms(energy_terms, shared_terms, tid);
+	flush_block_terms(block_terms, shared_terms, tid);
 }
 
 } // namespace
@@ -385,14 +389,34 @@ void free_energy() {
 
 	const unsigned int threads = 256;
 	const size_t shared_bytes = sizeof(double) * ENERGY_TERMS_COUNT * threads;
+	unsigned int bulk_blocks = 0;
+	unsigned int surf_blocks = 0;
 	if (bulk > 0) {
-		const unsigned int bulk_blocks = (bulk + threads - 1) / threads;
-		bulk_energy_kernel<<<bulk_blocks, threads, shared_bytes>>>(d_energy_terms, d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, bulk,
+		bulk_blocks = (bulk + threads - 1) / threads;
+		if (d_bulk_block_terms == nullptr || cached_bulk_blocks != bulk_blocks) {
+			if (d_bulk_block_terms != nullptr) cudaFree(d_bulk_block_terms);
+			status = cudaMalloc((void**)&d_bulk_block_terms, sizeof(double) * ENERGY_TERMS_COUNT * bulk_blocks);
+			if (status != cudaSuccess) {
+				fprintf(stderr, "cudaMalloc failed for bulk energy partials: %s\n", cudaGetErrorString(status));
+				exit(1);
+			}
+			cached_bulk_blocks = bulk_blocks;
+		}
+		bulk_energy_kernel<<<bulk_blocks, threads, shared_bytes>>>(d_bulk_block_terms, d_Qold, d_bulktype, d_neighbor, d_Qtensor_index, bulk,
 			chiral, U, U2, idx, idy, idz);
 	}
 	if ((surf + nsurf) > 0) {
-		const unsigned int surf_blocks = (surf + nsurf + threads - 1) / threads;
-		surface_energy_kernel<<<surf_blocks, threads, shared_bytes>>>(d_energy_terms, d_Qold, d_Nvector_signal, d_Nvector_index, d_Qo,
+		surf_blocks = (surf + nsurf + threads - 1) / threads;
+		if (d_surf_block_terms == nullptr || cached_surf_blocks != surf_blocks) {
+			if (d_surf_block_terms != nullptr) cudaFree(d_surf_block_terms);
+			status = cudaMalloc((void**)&d_surf_block_terms, sizeof(double) * ENERGY_TERMS_COUNT * surf_blocks);
+			if (status != cudaSuccess) {
+				fprintf(stderr, "cudaMalloc failed for surface energy partials: %s\n", cudaGetErrorString(status));
+				exit(1);
+			}
+			cached_surf_blocks = surf_blocks;
+		}
+		surface_energy_kernel<<<surf_blocks, threads, shared_bytes>>>(d_surf_block_terms, d_Qold, d_Nvector_signal, d_Nvector_index, d_Qo,
 			d_nu, surf + nsurf, degenerate, infinite, W, Wp, dA, dApart, S0, tiltAngle);
 	}
 
@@ -409,10 +433,41 @@ void free_energy() {
 	}
 
 	double host_energy_terms[ENERGY_TERMS_COUNT] = { 0. };
-	status = cudaMemcpy(host_energy_terms, d_energy_terms, sizeof(double) * ENERGY_TERMS_COUNT, cudaMemcpyDeviceToHost);
-	if (status != cudaSuccess) {
-		fprintf(stderr, "cudaMemcpy failed for energy terms: %s\n", cudaGetErrorString(status));
-		exit(1);
+	if (bulk_blocks > 0) {
+		double* host_bulk_terms = (double*)malloc(sizeof(double) * ENERGY_TERMS_COUNT * bulk_blocks);
+		if (host_bulk_terms == nullptr) {
+			fprintf(stderr, "malloc failed for bulk energy partials.\n");
+			exit(1);
+		}
+		status = cudaMemcpy(host_bulk_terms, d_bulk_block_terms, sizeof(double) * ENERGY_TERMS_COUNT * bulk_blocks, cudaMemcpyDeviceToHost);
+		if (status != cudaSuccess) {
+			fprintf(stderr, "cudaMemcpy failed for bulk energy partials: %s\n", cudaGetErrorString(status));
+			exit(1);
+		}
+		for (unsigned int block = 0; block < bulk_blocks; block++) {
+			for (int term = 0; term < ENERGY_TERMS_COUNT; term++) {
+				host_energy_terms[term] += host_bulk_terms[block * ENERGY_TERMS_COUNT + term];
+			}
+		}
+		free(host_bulk_terms);
+	}
+	if (surf_blocks > 0) {
+		double* host_surf_terms = (double*)malloc(sizeof(double) * ENERGY_TERMS_COUNT * surf_blocks);
+		if (host_surf_terms == nullptr) {
+			fprintf(stderr, "malloc failed for surface energy partials.\n");
+			exit(1);
+		}
+		status = cudaMemcpy(host_surf_terms, d_surf_block_terms, sizeof(double) * ENERGY_TERMS_COUNT * surf_blocks, cudaMemcpyDeviceToHost);
+		if (status != cudaSuccess) {
+			fprintf(stderr, "cudaMemcpy failed for surface energy partials: %s\n", cudaGetErrorString(status));
+			exit(1);
+		}
+		for (unsigned int block = 0; block < surf_blocks; block++) {
+			for (int term = 0; term < ENERGY_TERMS_COUNT; term++) {
+				host_energy_terms[term] += host_surf_terms[block * ENERGY_TERMS_COUNT + term];
+			}
+		}
+		free(host_surf_terms);
 	}
 
 	en_ldg[0] = host_energy_terms[LDG_TOTAL] * dV;
