@@ -2,6 +2,10 @@
 #include <cuda_runtime.h>
 #include <device_launch_parameters.h>
 
+#ifndef DEBUG_ENERGY_COMPARE
+#define DEBUG_ENERGY_COMPARE 0
+#endif
+
 extern unsigned int bulk, surf, nsurf;
 extern double* d_Qold;
 extern unsigned char* d_bulktype;
@@ -334,6 +338,36 @@ __global__ void surface_energy_kernel(double* energy_terms, const double* d_Qold
 
 } // namespace
 
+#if DEBUG_ENERGY_COMPARE
+static void debug_compare_cpu_gpu_energy() {
+	cudaError_t status = cudaMemcpy(Qold, d_Qold, droplet * 6 * sizeof(double), cudaMemcpyDeviceToHost);
+	if (status != cudaSuccess) {
+		fprintf(stderr, "cudaMemcpy failed for CPU/GPU energy comparison: %s\n", cudaGetErrorString(status));
+		exit(1);
+	}
+
+	double cpu_ldg[3] = { 0. };
+	double cpu_el[5] = { 0. };
+	double cpu_el_in[5] = { 0. };
+	double cpu_el_out[5] = { 0. };
+	double cpu_surf[2] = { 0. };
+
+	ldg_energy(cpu_ldg);
+	elastic_energy(cpu_el, cpu_el_in, cpu_el_out);
+	surface_energy(cpu_surf);
+
+	const double cpu_tot = cpu_ldg[0] + cpu_el[0] + cpu_el[1] + cpu_el[2] + cpu_el[3] + cpu_el[4] + cpu_surf[0] + cpu_surf[1];
+
+	printf("[energy cmp] cycle %d\n", cycle);
+	printf("[energy cmp] GPU total=%0.12lf CPU total=%0.12lf diff=%+.12e\n", en_tot, cpu_tot, en_tot - cpu_tot);
+	printf("[energy cmp] GPU LdG=%0.12lf CPU LdG=%0.12lf diff=%+.12e\n", en_ldg[0], cpu_ldg[0], en_ldg[0] - cpu_ldg[0]);
+	printf("[energy cmp] GPU L1=%0.12lf CPU L1=%0.12lf diff=%+.12e\n", en_el[0], cpu_el[0], en_el[0] - cpu_el[0]);
+	printf("[energy cmp] GPU L2=%0.12lf CPU L2=%0.12lf diff=%+.12e\n", en_el[1], cpu_el[1], en_el[1] - cpu_el[1]);
+	printf("[energy cmp] GPU Surf1=%0.12lf CPU Surf1=%0.12lf diff=%+.12e\n", en_surf[0], cpu_surf[0], en_surf[0] - cpu_surf[0]);
+	printf("[energy cmp] GPU SurfP=%0.12lf CPU SurfP=%0.12lf diff=%+.12e\n", en_surf[1], cpu_surf[1], en_surf[1] - cpu_surf[1]);
+}
+#endif
+
 void free_energy() {
 	if (d_energy_terms == nullptr) {
 		cudaError_t status = cudaMalloc((void**)&d_energy_terms, sizeof(double) * ENERGY_TERMS_COUNT);
@@ -409,6 +443,12 @@ void free_energy() {
 	dE = en_tot - old_en;
 	old_en = en_tot;
 
+#if DEBUG_ENERGY_COMPARE
+	if (cycle % check_every == 0) {
+		debug_compare_cpu_gpu_energy();
+	}
+#endif
+	
 	if(DoubleU){
 		if(cycle % check_every == 0){
 			printf("LdG: %lf, En_L1: %lf", en_ldg[0], en_el[0]);
